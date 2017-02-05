@@ -1,0 +1,5 @@
+queryFilePath=HW1-Train-0.qry.txt
+indexPath=index
+trecEvalOutputPath=HW1-queries-UB.teIn
+retrievalAlgorithm=RankedBoolean
+
