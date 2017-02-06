@@ -239,7 +239,6 @@ public class QryEval {
 	    	}
     }
     writer.close();
- 
   }
 
   /**

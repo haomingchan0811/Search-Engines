@@ -110,11 +110,11 @@ public abstract class Qry {
   public void appendArg(Qry q) throws IllegalArgumentException {
 
     //  The query parser and query operator type system are too simple
-    //  to detect some kinds of query syntax errors.  appendArg does
-    //  additional syntax checking while creating the query tree.  It
+    //  to detect some kinds of query syntax errors. appendArg does
+    //  additional syntax checking while creating the query tree. It
     //  also inserts SCORE operators between QrySop operators and QryIop
     //  arguments, and propagates field information from QryIop
-    //  children to parents.  Basically, it creates a well-formed
+    //  children to parents. Basically, it creates a well-formed
     //  query tree.
     
     if(this instanceof QryIopTerm) {
@@ -134,6 +134,10 @@ public abstract class Qry {
          ("The argument to a SCORE operator must be of type QryIop.");
       } 
       else {
+    	  	if((q instanceof QryIopNear) && q.args.size() < 2){
+    	  		throw new IllegalArgumentException
+    	  		("NEAR operators must have at least two arguments");
+    	  	}
         this.args.add(q);
         return;
       }
@@ -142,7 +146,7 @@ public abstract class Qry {
     //  Check whether it is necessary to insert an implied SCORE
     //  operator between a QrySop operator and a QryIop argument.
 
-    if((this instanceof QrySop) &&(q instanceof QryIop)) {
+    if((this instanceof QrySop) && (q instanceof QryIop)) {
       Qry impliedOp = new QrySopScore();
       impliedOp.setDisplayName("#SCORE");
       impliedOp.appendArg(q);
@@ -228,10 +232,10 @@ public abstract class Qry {
    */
   public int docIteratorGetMatch() {
     if(this.docIteratorHasMatchCache()) {
-      return this.docIteratorMatchCache;
+    		return this.docIteratorMatchCache;
     } 
     else {
-      throw new IllegalStateException("No matching docid was cached.");
+    		throw new IllegalStateException("No matching docid was cached.");
     }
   }
 
@@ -256,40 +260,39 @@ public abstract class Qry {
     // Keep trying until a match is found or no match is possible.
     while(!matchFound) {
 
-      // Get the docid of the first query argument.
-      Qry q_0 = this.args.get(0);
+    		// Get the docid of the first query argument.
+    		Qry q_0 = this.args.get(0);
+	
+    		if(!q_0.docIteratorHasMatch(r)) {
+    			return false;
+    		}
+	
+    		int docid_0 = q_0.docIteratorGetMatch();
 
-      if(!q_0.docIteratorHasMatch(r)) {
-    	  return false;
-      }
+    		// Other query arguments must match the docid of the first query argument.
+    		matchFound = true;
+	
+    		for(int i = 1; i < this.args.size(); i++) {
+    			Qry q_i = this.args.get(i);
+	
+    			q_i.docIteratorAdvanceTo(docid_0);
+	
+    			if(!q_i.docIteratorHasMatch(r)) 		// If any argument is exhausted
+    				return false;					// there are no more matches.
+	
+    			int docid_i = q_i.docIteratorGetMatch();
+	
+    			if(docid_0 != docid_i) {		// docid_0 can't match. Try again.
+    				q_0.docIteratorAdvanceTo(docid_i);
+    				matchFound = false;
+    				break;
+}			
+    		}
 
-      int docid_0 = q_0.docIteratorGetMatch();
-
-      // Other query arguments must match the docid of the first query argument.
-      matchFound = true;
-
-      for(int i = 1; i < this.args.size(); i++) {
-          Qry q_i = this.args.get(i);
-
-    	  q_i.docIteratorAdvanceTo(docid_0);
-
-    	  if(!q_i.docIteratorHasMatch(r)) 	// If any argument is exhausted
-    		  return false;					// there are no more matches.
-
-    	  int docid_i = q_i.docIteratorGetMatch();
-
-    	  if(docid_0 != docid_i) {		// docid_0 can't match. Try again.
-    		  q_0.docIteratorAdvanceTo(docid_i);
-    		  matchFound = false;
-    		  break;
-    	  }
-      }
-
-      if(matchFound) {
-    	  docIteratorSetMatchCache(docid_0);
-      }
+    		if(matchFound) {
+    			docIteratorSetMatchCache(docid_0);
+    		}
     }
-
     return true;
   }
 
@@ -308,7 +311,8 @@ public abstract class Qry {
       int docid = q_0.docIteratorGetMatch();
       this.docIteratorSetMatchCache(docid);
       return true;
-    } else {
+    } 
+    else {
       return false;
     }
   }
@@ -326,23 +330,23 @@ public abstract class Qry {
     int minDocid = Qry.INVALID_DOCID;
 
     for(int i = 0; i < this.args.size(); i++) {
-    	Qry q_i = this.args.get(i);
+    		Qry q_i = this.args.get(i);
 
-    	if(q_i.docIteratorHasMatch(r)) {
-    		int q_iDocid = q_i.docIteratorGetMatch();
+    		if(q_i.docIteratorHasMatch(r)) {
+    			int q_iDocid = q_i.docIteratorGetMatch();
 
 	        if((minDocid > q_iDocid) || (minDocid == Qry.INVALID_DOCID)) {
-	        	minDocid = q_iDocid;
+	        		minDocid = q_iDocid;
 	        }
-    	}
+    		}
     }
 
     if(minDocid != Qry.INVALID_DOCID) {
-    	docIteratorSetMatchCache(minDocid);
-    	return true;
+    		docIteratorSetMatchCache(minDocid);
+    		return true;
     } 
     else 
-    	return false;
+    		return false;
   }
 
   /**

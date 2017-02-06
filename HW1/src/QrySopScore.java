@@ -33,14 +33,14 @@ public class QrySopScore extends QrySop{
   public double getScore(RetrievalModel r) throws IOException{
 
     if(r instanceof RetrievalModelUnrankedBoolean){
-    	return this.getScoreUnrankedBoolean(r);
+    		return this.getScoreUnrankedBoolean(r);
     }
     else if(r instanceof RetrievalModelRankedBoolean){
         return this.getScoreRankedBoolean(r);
     }
     else{
-    	throw new IllegalArgumentException
-    	(r.getClass().getName() + " doesn't support the SCORE operator.");
+    		throw new IllegalArgumentException
+    		(r.getClass().getName() + " doesn't support the SCORE operator.");
     }
   }
   

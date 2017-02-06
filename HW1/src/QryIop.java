@@ -171,7 +171,7 @@ public abstract class QryIop extends Qry {
 
     //  Initialize the query arguments (if any).
     for(Qry q_i: this.args) {
-    	((QryIop) q_i).initialize(r);
+    		((QryIop) q_i).initialize(r);
     }
 
     //  Evaluate the operator.
@@ -201,7 +201,7 @@ public abstract class QryIop extends Qry {
 
     while((this.locIteratorIndex < tf) &&
           (positions.get(this.locIteratorIndex) <= loc)) {
-    	locIteratorIndex++;
+    		locIteratorIndex++;
     }
   }
 
@@ -209,7 +209,7 @@ public abstract class QryIop extends Qry {
    *  Advance the query operator's internal iterator beyond
    *  any possible location.
    */
-  public void locIteratorFinish () {
+  public void locIteratorFinish() {
     this.locIteratorIndex =
     	this.invertedList.postings.get(this.docIteratorIndex).tf;
   }
@@ -217,7 +217,7 @@ public abstract class QryIop extends Qry {
   /**
    *  Return the document location that the query operator's internal
    *  iterator points to now. Use iterHasLoc to determine whether
-   *  the iterator currently points to a location.  If the iterator
+   *  the iterator currently points to a location. If the iterator
    *  doesn't point to a location, an invalid document location is returned.
    *  @return The internal id of the current document.
    */

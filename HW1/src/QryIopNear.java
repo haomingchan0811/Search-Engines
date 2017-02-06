@@ -8,63 +8,134 @@ import java.util.*;
  *  The NEAR operator for all retrieval models.
  */
 public class QryIopNear extends QryIop {
+	
+	//  The distance constraint between arguments
+	private int distance;
 
-  /**
-   *  Evaluate the query operator; the result is an internal inverted
-   *  list that may be accessed via the internal iterators.
-   *  @throws IOException Error accessing the Lucene index.
-   */
-  protected void evaluate() throws IOException {
-
-    //  Create an empty inverted list.  If there are no query arguments,
-    //  that's the final result.
-    
-    this.invertedList = new InvList (this.getField());
-
-    if (args.size () == 0) return;
-
-    //  Each pass of the loop adds 1 document to result inverted list
-    //  until all of the argument inverted lists are depleted.
-
-    while (true) {
-
-      //  Find the minimum next document id. If there is none, we're done.
-      int minDocid = Qry.INVALID_DOCID;
-
-      for (Qry q_i: this.args) {
-        if (q_i.docIteratorHasMatch (null)) {
-          int q_iDocid = q_i.docIteratorGetMatch ();
-          
-          if ((minDocid > q_iDocid) ||
-              (minDocid == Qry.INVALID_DOCID)) {
-            minDocid = q_iDocid;
-          }
-        }
-      }
-
-      if (minDocid == Qry.INVALID_DOCID)
-        break;				// All docids have been processed.  Done.
-      
-      //  Create a new posting that is the union of the posting lists
-      //  that match the minDocid.  Save it.
-      //  Note:  This implementation assumes that a location will not appear
-      //  in two or more arguments.  #SYN (apple apple) would break it.
-
-      List<Integer> positions = new ArrayList<Integer>();
-
-      for (Qry q_i: this.args) {
-        if (q_i.docIteratorHasMatch (null) &&
-            (q_i.docIteratorGetMatch () == minDocid)) {
-          Vector<Integer> locations_i =
-            ((QryIop) q_i).docIteratorGetMatchPosting().positions;
-	  positions.addAll (locations_i);
-          q_i.docIteratorAdvancePast (minDocid);
+	public QryIopNear(String distance){
+		this.distance = Integer.parseInt(distance);
 	}
-      }
 
-      Collections.sort (positions);
-      this.invertedList.appendPosting (minDocid, positions);
-    }
-  }
+	/**
+	 *  Evaluate the query operator; the result is an internal inverted
+	 *  list that may be accessed via the internal iterators.
+	 *  @throws IOException Error accessing the Lucene index.
+	 *  @throws IllegalArgumentException invalid number of arguments for the NEAR operator
+	 */
+	protected void evaluate()throws IOException {
+
+	    //  Create an empty inverted list. If there are no query arguments,
+	    //  that's the final result.
+	    
+	    this.invertedList = new InvList(this.getField());
+	    if(args.size() == 0) return;
+
+	    // Each pass of the loop adds 1 document to result inverted list
+	    // until all of the argument inverted lists are depleted.
+	    while(true) {
+	    	// First, find the next document id where all arguments exist 
+	    	// If there is none, we're done.
+	    	
+	    	int docid = Qry.INVALID_DOCID;
+	    	boolean docMatchFound = false;
+	
+		    // Keep trying until all matches are found or no match is possible.
+		    while(!docMatchFound) {
+		
+	    		// Get the docid of the first query argument.
+	    		Qry q_0 = this.args.get(0);
+	    		if(!q_0.docIteratorHasMatch(null)) return;   // first argument exhausted
+	    		int docid_0 = q_0.docIteratorGetMatch();
+		
+	    		// Other query arguments must match the docid of the first query argument.
+	    		docMatchFound = true;
+		
+	    		for(int i = 1; i < this.args.size(); i++) {
+	    			Qry q_i = this.args.get(i);
+	    			q_i.docIteratorAdvanceTo(docid_0);
+	    			
+	    			if(!q_i.docIteratorHasMatch(null)) 		// If any argument is exhausted
+	    				return;								// there are no more matches.
+		
+	    			int docid_i = q_i.docIteratorGetMatch();
+	    			
+	    			if(docid_0 != docid_i) {					// docid_0 can't match. Try again.
+	    				q_0.docIteratorAdvanceTo(docid_i);
+	    				System.out.println(q_0.docIteratorGetMatch());
+	    				docMatchFound = false;
+	    				break;
+	    			}
+	    			
+	    		}
+	    		
+	    		// Secondly, find the positions that satisfy the constraint in the same doc
+	    		if(docMatchFound) {
+	    			// Create a new posting to record the location information				
+				   	List<Integer> positions = new ArrayList<Integer>();
+				   	
+	    			boolean moreLoc = true; // whether there're more locations to search			
+//	    	    	System.out.println("found a document");
+	    			while(moreLoc) {	    			
+//		    	    	System.out.println("looking for positions of doc" + docid_0);
+		    	    	
+				    	boolean locMatchFound = false;
+				    	int prevElemLoc = -1;
+				    	
+				    	// keep trying until a match is found or no match is possible
+				    	while(!locMatchFound) {    	
+		    	    		// Get the locid of the first query argument.
+				    	 	QryIop loc_0 = (QryIop) q_0;
+				    	 	
+				    	 	// all locids have been processed. Done for this document
+				    	 	if(!loc_0.locIteratorHasMatch()) {
+//				    	 		System.out.println("1st elem exhausted!!");
+				    	 		moreLoc = false; 
+				    	 		break;
+				    	 	}  	
+				    	 	int locid_0 = loc_0.locIteratorGetMatch();
+// 			    	    	System.out.println("locations found: " + locid_0);
+				    	 	
+				    	 	locMatchFound = true;	// other positions must satisfy the proximity constraint
+				    	
+				    	 	prevElemLoc = locid_0;  // location of the previous element 
+				    	
+				    	 	for(int i = 1; i < this.args.size(); i++) {
+				    	 		QryIop loc_i = (QryIop) this.args.get(i);
+				    	 		
+				    	 		loc_i.locIteratorAdvancePast(prevElemLoc);
+	
+				    	 		if(!loc_i.locIteratorHasMatch()) {
+				    	 			moreLoc = false;
+					    	 		return; 		// locations exhausted. Done
+				    	 		}
+				    	 		int locid_i = loc_i.locIteratorGetMatch();
+//				    	 		System.out.println("location for 2nd: " + locid_i);
+				    	 		
+				    	 		// location proximity doesn't match
+				    	 		if(locid_i - prevElemLoc > distance) {
+				    	 			loc_0.locIteratorAdvance();
+				    	 			locMatchFound = false;
+				    	 			break;
+				    	 		}
+//				    	 		System.out.println("succussfully found a seq!");
+				    	 		prevElemLoc = locid_i;
+				    	 	}
+				    	}
+//		    	 		System.out.println("add into list: " + prevElemLoc);
+				    	if(locMatchFound) {
+				    		positions.add(prevElemLoc);  // add the matched location
+				    		for(Qry q_i: this.args) {
+				    			QryIop loc_i = (QryIop) q_i;
+				    	 		loc_i.locIteratorAdvancePast(loc_i.locIteratorGetMatch());
+				    		}
+				    	}
+	    			}
+	    			Collections.sort(positions);
+	    			this.invertedList.appendPosting(docid_0, positions);
+	    		}
+	    		q_0.docIteratorAdvancePast(docid_0);
+    		}		
+		 }
+	}
 
 }

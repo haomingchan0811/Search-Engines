@@ -27,7 +27,7 @@ public class QrySopOr extends QrySop {
 	 *  @throws IOException Error accessing the Lucene index
 	 */
   	public double getScore(RetrievalModel r) throws IOException {
-    
+
   		if(r instanceof RetrievalModelUnrankedBoolean)
   			return this.getScoreUnrankedBoolean(r);
   		else if(r instanceof RetrievalModelRankedBoolean)

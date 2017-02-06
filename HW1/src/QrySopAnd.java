@@ -46,9 +46,9 @@ public class QrySopAnd extends QrySop {
    */
   private double getScoreUnrankedBoolean (RetrievalModel r) throws IOException {
     if(!this.docIteratorHasMatchCache()) 
-    	return 0.0;
+    		return 0.0;
     else 
-    	return 1.0;
+    		return 1.0;
   }
   
   /**
