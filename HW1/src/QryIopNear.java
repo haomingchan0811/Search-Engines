@@ -36,7 +36,6 @@ public class QryIopNear extends QryIop {
 	    	// First, find the next document id where all arguments exist 
 	    	// If there is none, we're done.
 	    	
-	    	int docid = Qry.INVALID_DOCID;
 	    	boolean docMatchFound = false;
 	
 		    // Keep trying until all matches are found or no match is possible.
@@ -61,11 +60,10 @@ public class QryIopNear extends QryIop {
 	    			
 	    			if(docid_0 != docid_i) {					// docid_0 can't match. Try again.
 	    				q_0.docIteratorAdvanceTo(docid_i);
-	    				System.out.println(q_0.docIteratorGetMatch());
+//	    				System.out.println(q_0.docIteratorGetMatch());
 	    				docMatchFound = false;
 	    				break;
 	    			}
-	    			
 	    		}
 	    		
 	    		// Secondly, find the positions that satisfy the constraint in the same doc
@@ -90,6 +88,7 @@ public class QryIopNear extends QryIop {
 				    	 	if(!loc_0.locIteratorHasMatch()) {
 //				    	 		System.out.println("1st elem exhausted!!");
 				    	 		moreLoc = false; 
+			    	 			locMatchFound = false;
 				    	 		break;
 				    	 	}  	
 				    	 	int locid_0 = loc_0.locIteratorGetMatch();
@@ -105,8 +104,10 @@ public class QryIopNear extends QryIop {
 				    	 		loc_i.locIteratorAdvancePast(prevElemLoc);
 	
 				    	 		if(!loc_i.locIteratorHasMatch()) {
+//					    	 		System.out.println("elem exhausted!!");
 				    	 			moreLoc = false;
-					    	 		return; 		// locations exhausted. Done
+				    	 			prevElemLoc = -1;
+					    	 		break; 			// locations exhausted. Done
 				    	 		}
 				    	 		int locid_i = loc_i.locIteratorGetMatch();
 //				    	 		System.out.println("location for 2nd: " + locid_i);
@@ -117,12 +118,12 @@ public class QryIopNear extends QryIop {
 				    	 			locMatchFound = false;
 				    	 			break;
 				    	 		}
-//				    	 		System.out.println("succussfully found a seq!");
+//				    	 		System.out.println("successfully found a match seq!");
 				    	 		prevElemLoc = locid_i;
 				    	 	}
 				    	}
-//		    	 		System.out.println("add into list: " + prevElemLoc);
-				    	if(locMatchFound) {
+				    	if(locMatchFound && prevElemLoc != -1) {
+//			    	 		System.out.println("add into list: " + prevElemLoc);
 				    		positions.add(prevElemLoc);  // add the matched location
 				    		for(Qry q_i: this.args) {
 				    			QryIop loc_i = (QryIop) q_i;
@@ -130,8 +131,11 @@ public class QryIopNear extends QryIop {
 				    		}
 				    	}
 	    			}
-	    			Collections.sort(positions);
-	    			this.invertedList.appendPosting(docid_0, positions);
+//	    			System.out.println(positions.size());
+	    			if(positions.size() > 0) {
+		    			Collections.sort(positions);
+		    			this.invertedList.appendPosting(docid_0, positions);
+	    			}
 	    		}
 	    		q_0.docIteratorAdvancePast(docid_0);
     		}		

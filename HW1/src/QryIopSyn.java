@@ -59,7 +59,7 @@ public class QryIopSyn extends QryIop {
 	    			positions.addAll(locations_i);
 	    			q_i.docIteratorAdvancePast(minDocid);
 	    		}
-	    }
+	    	}
 
 	    	Collections.sort(positions);
 	    	this.invertedList.appendPosting(minDocid, positions);
