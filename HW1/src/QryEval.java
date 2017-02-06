@@ -50,7 +50,6 @@ public class QryEval {
     //  around to time specific parts of your code.
     
     Timer timer = new Timer();
-    timer.start();
 
     //  Check that a parameter file is included, and that the required
     //  parameters are present. Just store the parameters. They get
@@ -69,12 +68,14 @@ public class QryEval {
     Idx.open(parameters.get("indexPath"));
     RetrievalModel model = initializeRetrievalModel(parameters);
 
+    timer.start();
+
     // Perform experiments.
     processQueryFile(parameters.get("queryFilePath"), model);
 
     // Clean up.
     timer.stop();
-//    System.out.println("Time:  " + timer);
+    System.out.println("Time:  " + timer);
   }
 
   /**
@@ -151,7 +152,7 @@ public class QryEval {
       return r;
     } 
     else 
-    		return null;
+    	return null;
   }
 
   /**
@@ -222,21 +223,21 @@ public class QryEval {
     
     // Dummy output when no documents are retrieved 
     if(result.size() < 1){
-    		System.out.println(prefix + " dummy 1 0 haominc_HW1");
-    		writer.println(prefix + " dummy 1 0 haomingc_HW1");
+		System.out.println(prefix + " dummy 1 0 haominc_HW1");
+		writer.println(prefix + " dummy 1 0 haomingc_HW1");
     }
     else{
-	    	/* Result with descending score then ascending external docid if tie exists.
-	    	 * Output N (outputLength) documents per query or all if N < result.size()
-	    	 */
-	    	for(int i = 0; i < result.size() && i < outputLength; i++) {
-	    		System.out.println(String.format("%s %s %s %s haomingc_HW1", prefix, 
-	    		Idx.getExternalDocid(result.getDocid(i)), i + 1, result.getDocidScore(i)));
-	    	
-	    		// Write the results to the file in trec_eval format
-	    		writer.println(String.format("%s %s %s %s haomingc_HW1", prefix, 
-	    		Idx.getExternalDocid(result.getDocid(i)), i + 1, result.getDocidScore(i)));
-	    	}
+	    /* Result with descending score then ascending external docid if tie exists.
+	   	 * Output N (outputLength) documents per query or all if N < result.size()
+	   	 */
+	   	for(int i = 0; i < result.size() && i < outputLength; i++) {
+	   		System.out.println(String.format("%s %s %s %s haomingc_HW1", prefix, 
+    		Idx.getExternalDocid(result.getDocid(i)), i + 1, result.getDocidScore(i)));
+    			    	
+	    	// Write the results to the file in trec_eval format
+	    	writer.println(String.format("%s %s %s %s haomingc_HW1", prefix, 
+	   		Idx.getExternalDocid(result.getDocid(i)), i + 1, result.getDocidScore(i)));
+	   	}
     }
     writer.close();
   }

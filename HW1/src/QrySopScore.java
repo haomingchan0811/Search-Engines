@@ -52,6 +52,7 @@ public class QrySopScore extends QrySop{
    */
   private double getScoreRankedBoolean(RetrievalModel r) throws IOException{
 	  if(this.docIteratorHasMatchCache()){
+	  
 		  // return the term frequency as the score 
 		  return this.getArg(0).docIteratorGetMatchPosting().tf;
 	  }

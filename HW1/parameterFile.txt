@@ -1,5 +1,4 @@
-queryFilePath=HW1-Train-0.qry.txt
+queryFilePath=queriesStructured1.txt
 indexPath=index
-trecEvalOutputPath=HW1-queries-UB.teIn
-retrievalAlgorithm=RankedBoolean
-
+trecEvalOutputPath=Structured1_RankedBoolean.teIn
+retrievalAlgorithm=rankedBoolean

@@ -29,41 +29,40 @@ public class QryIopSyn extends QryIop {
     //  until all of the argument inverted lists are depleted.
 
     while (true) {
-	    	//  Find the minimum next document id. If there is none, we're done.
-	    	int minDocid = Qry.INVALID_DOCID;
+    	//  Find the minimum next document id. If there is none, we're done.
+		int minDocid = Qry.INVALID_DOCID;
 	
-	    	for(Qry q_i: this.args) {
-	    		if(q_i.docIteratorHasMatch(null)) {
-	    			int q_iDocid = q_i.docIteratorGetMatch();
-	          
-	    			if (minDocid > q_iDocid || minDocid == Qry.INVALID_DOCID) {
-	    				minDocid = q_iDocid;
-	    			}
-	    		}
-	    	}
-	
-	    	// All docids have been processed. Done.
-	    	if(minDocid == Qry.INVALID_DOCID) break;				
-	      
-	    	//  Create a new posting that is the union of the posting lists
-	    	//  that match the minDocid. Save it.
-	    	//  Note:	This implementation assumes that a location will not appear
-	    	//  in two or more arguments. #SYN (apple apple) would break it.
-	
-	    	List<Integer> positions = new ArrayList<Integer>();
-	
-	    	for(Qry q_i: this.args) {
-	    		if(q_i.docIteratorHasMatch(null) && q_i.docIteratorGetMatch() == minDocid) {
-	    			Vector<Integer> locations_i = 
-	    				((QryIop) q_i).docIteratorGetMatchPosting().positions;
-	    			positions.addAll(locations_i);
-	    			q_i.docIteratorAdvancePast(minDocid);
-	    		}
-	    	}
-
-	    	Collections.sort(positions);
-	    	this.invertedList.appendPosting(minDocid, positions);
+    	for(Qry q_i: this.args) {
+    		if(q_i.docIteratorHasMatch(null)) {
+    			int q_iDocid = q_i.docIteratorGetMatch();
+          
+    			if (minDocid > q_iDocid || minDocid == Qry.INVALID_DOCID) {
+    				minDocid = q_iDocid;
+    			}
+    		}
     	}
-  }
+	
+    	// All docids have been processed. Done.
+    	if(minDocid == Qry.INVALID_DOCID) break;				
+	      
+    	//  Create a new posting that is the union of the posting lists
+    	//  that match the minDocid. Save it.
+    	//  Note:	This implementation assumes that a location will not appear
+    	//  in two or more arguments. #SYN (apple apple) would break it.
+	
+    	List<Integer> positions = new ArrayList<Integer>();
 
+    	for(Qry q_i: this.args) {
+    		if(q_i.docIteratorHasMatch(null) && q_i.docIteratorGetMatch() == minDocid) {
+    			Vector<Integer> locations_i = 
+    				((QryIop) q_i).docIteratorGetMatchPosting().positions;
+    			positions.addAll(locations_i);
+    			q_i.docIteratorAdvancePast(minDocid);
+    		}
+    	}
+
+    	Collections.sort(positions);
+    	this.invertedList.appendPosting(minDocid, positions);
+	}
+  }
 }
