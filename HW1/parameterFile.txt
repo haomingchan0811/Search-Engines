@@ -1,4 +1,4 @@
-queryFilePath=queriesStructured1.txt
+queryFilePath=queriesStructured.txt
 indexPath=index
-trecEvalOutputPath=Structured1_RankedBoolean.teIn
-retrievalAlgorithm=rankedBoolean
+trecEvalOutputPath=Structured_unRankedBoolean.teIn
+retrievalAlgorithm=unrankedBoolean
