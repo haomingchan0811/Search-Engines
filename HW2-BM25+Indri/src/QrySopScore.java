@@ -97,14 +97,18 @@ public class QrySopScore extends QrySop{
             InvList.DocPosting inv = this.getArg(0).docIteratorGetMatchPosting();
             int docid = inv.docid;
 
-            // Compute the RSJ (idf) weight of Okapi BMxx model
+            /*
+             * Compute the RSJ (idf) weight of Okapi BMxx model
+             */
             double df = this.getArg(0).getDf();
             String field = this.getArg(0).getField();
             double N = Idx.getDocCount(field);      // number of documents in the field
             // restrict RSJ weight to be non-negative
             double idfWeight = Math.max(0, Math.log((N - df + 0.5) / (df + 0.5)));
 
-            // Compute the tf weight of Okapi BMxx model
+            /*
+             * Compute the tf weight of Okapi BMxx model
+             */
             double tf = inv.tf;
             double k1 = bm25.getParam("k1");
             double b = bm25.getParam("b");
@@ -112,9 +116,12 @@ public class QrySopScore extends QrySop{
             double avg_docLen = Idx.getSumOfFieldLengths(field) / N;
             double tfWeight = tf / (tf + k1 * (1 - b + b * docLen / avg_docLen));
 
-            // Compute the user weight of Okapi BMxx model
+            /*
+             * Compute the user weight of Okapi BMxx model. For HW2: qtf will
+             * always be 1, "apple pie pie" is the same as "apple pie".
+             */
             double k3 = bm25.getParam("k3");
-            double qtf = 1.0;           // for HW2: qtf will always be 1
+            double qtf = 1.0;
             double userWeight = (k3 + 1) * qtf / (k3 + qtf);
 
             // Final BM25 score for this term in a specific doc
