@@ -21,6 +21,12 @@ public class RetrievalModelIndri extends RetrievalModel {
     // set parameters for retrieval model
     public void setParameters(Map<String, String> param) {
 
+        // check the occurrence of required parameters
+        if(!(param.containsKey("Indri:mu") && param.containsKey("Indri:lambda"))){
+            throw new IllegalArgumentException
+                    ("Required parameters for Indri model were missing from the parameter file.");
+        }
+
         mu = Integer.parseInt(param.get("Indri:mu"));
         if(mu < 0) throw new IllegalArgumentException
                 ("Illegal argument: " + param.get("Indri:mu") + ", mu is an integer >= 0");

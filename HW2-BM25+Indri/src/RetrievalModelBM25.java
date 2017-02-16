@@ -20,6 +20,14 @@ public class RetrievalModelBM25 extends RetrievalModel {
 	// set parameters for retrieval model
 	public void setParameters(Map<String, String> param) {
 
+	    // check the occurrence of required parameters
+        if(!(param.containsKey("BM25:k_1") &&
+                param.containsKey("BM25:k_3") &&
+                param.containsKey("BM25:b"))) {
+            throw new IllegalArgumentException
+                    ("Required parameters for BM25 model were missing from the parameter file.");
+        }
+
         k1 = Double.parseDouble(param.get("BM25:k_1"));
         if(k1 < 0) throw new IllegalArgumentException
                 ("Illegal argument: " + param.get("BM25:k_1") + ", k1 is a real number >= 0.0");

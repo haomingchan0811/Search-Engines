@@ -153,7 +153,7 @@ public class QryEval {
     qString = defaultOp + "(" + qString + ")";
     Qry q = QryParser.getQuery(qString);
 
-    // Show the query that is evaluated
+//    // Show the query that is evaluated
 //    System.out.println("    --> " + q);
     
     if(q != null) {
