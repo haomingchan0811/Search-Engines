@@ -41,4 +41,18 @@ public class RetrievalModelBM25 extends RetrievalModel {
                 ("Illegal argument: " + param.get("BM25:k_3") + ", k3 is a real number >= 0.0");
     }
 
+    // Fetch value of the parameter
+    public double getParam(String s) {
+        switch (s) {
+            case "k1":
+                return this.k1;
+            case "b":
+                return this.b;
+            case "k3":
+                return this.k3;
+            default:
+                throw new IllegalArgumentException
+                        ("Illegal arguement: BM25 doesn't have argument " + s);
+        }
+    }
 }

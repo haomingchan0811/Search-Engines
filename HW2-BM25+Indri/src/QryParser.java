@@ -97,10 +97,14 @@ public class QryParser {
 	      	case "#or":
 	      		operator = new QrySopOr();
 	      		break;
-	      		
+
 	      	case "#and":
 	      		operator = new QrySopAnd();
 	      		break;
+
+            case "#sum":
+                operator = new QrySopSum();
+                break;
 	
 	      	case "#syn":
 	      		operator = new QryIopSyn();
@@ -175,9 +179,9 @@ public class QryParser {
   public static Qry getQuery (String queryString)
       throws IOException, IllegalArgumentException {
 
-    Qry q = parseString (queryString);		// An exact parse
-    q = optimizeQuery (q);			// An optimized parse
-    return q;
+      Qry q = parseString(queryString);		// An exact parse
+      q = optimizeQuery(q);			        // An optimized parse
+      return q;
   }
 
   /**
@@ -336,11 +340,11 @@ public class QryParser {
   /**
    *  Remove a subQuery from an argument string. Return the subquery
    *  and the modified argument string.
-   *  @param String A partial query argument string, e.g.: "#and(a b) c d".
+   *  @param argString A partial query argument string, e.g.: "#and(a b) c d".
    *  @return PopData<String,String> The subquery string and the
    *  modified argString, e.g., "#and(a b)" and "c d".
    */
-  static private PopData<String,String> popSubquery(String argString) {
+  static private PopData<String, String> popSubquery(String argString) {
 	
     int i = indexOfBalencingParen (argString);
 	  
@@ -358,7 +362,7 @@ public class QryParser {
   /**
    *  Remove a term from an argument string. Return the term and
    *  the modified argument string.
-   *  @param String A partial query argument string, e.g., "a b c d".
+   *  @param argString A partial query argument string, e.g., "a b c d".
    *  @return PopData<String,String>
    *  The term string and the modified argString, e.g., "a" and "b c d".
    */

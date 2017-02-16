@@ -20,8 +20,7 @@ public abstract class QrySop extends Qry {
    *  @return The document score.
    *  @throws IOException Error accessing the Lucene index
    */
-  public abstract double getScore (RetrievalModel r)
-    throws IOException;
+  public abstract double getScore (RetrievalModel r) throws IOException;
 
   /**
    *  Initialize the query operator (and its arguments), including any
@@ -32,8 +31,8 @@ public abstract class QrySop extends Qry {
    *  @throws IOException Error accessing the Lucene index.
    */
   public void initialize(RetrievalModel r) throws IOException {
-    for (Qry q_i: this.args) {
-    		q_i.initialize(r);
-    }
+      for (Qry q_i: this.args) {
+          q_i.initialize(r);
+      }
   }
 }

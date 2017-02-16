@@ -157,20 +157,19 @@ public class QryEval {
 //    System.out.println("    --> " + q);
     
     if(q != null) {
-      ScoreList r = new ScoreList();
+        ScoreList r = new ScoreList();
       
-      if(q.args.size() > 0) {		// Ignore empty queries
-        q.initialize(model);
+        if(q.args.size() > 0) {		// Ignore empty queries
+            q.initialize(model);
 
-        while(q.docIteratorHasMatch(model)) {
-          int docid = q.docIteratorGetMatch();
-          double score = ((QrySop) q).getScore(model);
-          r.add(docid, score);
-          q.docIteratorAdvancePast(docid);
+            while(q.docIteratorHasMatch(model)) {
+                int docid = q.docIteratorGetMatch();
+                double score = ((QrySop) q).getScore(model);
+                r.add(docid, score);
+                q.docIteratorAdvancePast(docid);
+            }
         }
-      }
-
-      return r;
+        return r;
     } 
     else 
     	return null;

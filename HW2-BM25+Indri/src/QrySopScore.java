@@ -10,10 +10,16 @@ import java.lang.IllegalArgumentException;
  */
 public class QrySopScore extends QrySop{
 
-  /**
-   *  Document-independent values that should be determined just once.
-   *  Some retrieval models have these, some don't.
-   */
+    /**
+     *  Document-independent values that should be determined just once.
+     *  Some retrieval models have these, some don't.
+     */
+    // number of documents in the corpus
+//    private double N;
+//
+//    public QrySopScore() throws IOException {
+//        N = Idx.getNumDocs();
+//    }
   
   /**
    *  Indicates whether the query has a match.
@@ -37,6 +43,9 @@ public class QrySopScore extends QrySop{
     }
     else if(r instanceof RetrievalModelRankedBoolean){
         return this.getScoreRankedBoolean(r);
+    }
+    else if(r instanceof RetrievalModelBM25){
+        return this.getScoreBM25(r);
     }
     else{
 		throw new IllegalArgumentException
@@ -71,6 +80,49 @@ public class QrySopScore extends QrySop{
 	  else
 		  return 1.0;
   }
+
+    /**
+     *  getScore for the BM25 retrieval model.
+     *  @param r The retrieval model that determines how scores are calculated.
+     *  @return The document score.
+     *  @throws IOException Error accessing the Lucene index
+     */
+    public double getScoreBM25(RetrievalModel r) throws IOException{
+        if(this.docIteratorHasMatchCache()){
+
+            // Cast model type into BM25
+            RetrievalModelBM25 bm25 = (RetrievalModelBM25)r;
+
+            // Get the posting associated with this term in a specific doc
+            InvList.DocPosting inv = this.getArg(0).docIteratorGetMatchPosting();
+            int docid = inv.docid;
+
+            // Compute the RSJ (idf) weight of Okapi BMxx model
+            double df = this.getArg(0).getDf();
+            String field = this.getArg(0).getField();
+            double N = Idx.getDocCount(field);      // number of documents in the field
+            // restrict RSJ weight to be non-negative
+            double idfWeight = Math.max(0, Math.log((N - df + 0.5) / (df + 0.5)));
+
+            // Compute the tf weight of Okapi BMxx model
+            double tf = inv.tf;
+            double k1 = bm25.getParam("k1");
+            double b = bm25.getParam("b");
+            double docLen = Idx.getFieldLength(field, docid);
+            double avg_docLen = Idx.getSumOfFieldLengths(field) / N;
+            double tfWeight = tf / (tf + k1 * (1 - b + b * docLen / avg_docLen));
+
+            // Compute the user weight of Okapi BMxx model
+            double k3 = bm25.getParam("k3");
+            double qtf = 1.0;           // for HW2: qtf will always be 1
+            double userWeight = (k3 + 1) * qtf / (k3 + qtf);
+
+            // Final BM25 score for this term in a specific doc
+            return idfWeight * tfWeight * userWeight;
+        }
+        else
+            return 0.0;
+    }
 
   /**
    *  Initialize the query operator(and its arguments), including any

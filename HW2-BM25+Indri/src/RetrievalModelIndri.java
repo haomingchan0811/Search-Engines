@@ -36,4 +36,16 @@ public class RetrievalModelIndri extends RetrievalModel {
                 ("Illegal argument: " + param.get("Indri:lambda") + ", lambda is a real number between 0.0 and 1.0");
     }
 
+    // Fetch value of the parameter
+    public double getParam(String s) {
+        switch(s) {
+            case "mu":
+                return this.mu;
+            case "lambda":
+                return this.lambda;
+            default:
+                throw new IllegalArgumentException
+                        ("Illegal arguement: BM25 doesn't have argument " + s);
+        }
+    }
 }
