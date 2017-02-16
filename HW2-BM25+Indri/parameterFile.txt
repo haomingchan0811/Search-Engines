@@ -1,0 +1,9 @@
+queryFilePath=queriesOr.txt
+indexPath=index
+trecEvalOutputPath=Structured_unRankedBoolean.teIn
+retrievalAlgorithm=unrankedBoolean
+BM25:k_1=0.2
+BM25:b=0.5
+BM25:k_3=0.1
+Indri:mu=0.1
+Indri:lambda=0.5
