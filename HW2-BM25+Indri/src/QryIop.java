@@ -171,7 +171,7 @@ public abstract class QryIop extends Qry {
 
     //  Initialize the query arguments (if any).
     for(Qry q_i: this.args) {
-    		((QryIop) q_i).initialize(r);
+        ((QryIop) q_i).initialize(r);
     }
 
     //  Evaluate the operator.

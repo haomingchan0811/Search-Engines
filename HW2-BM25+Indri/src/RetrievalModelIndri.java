@@ -45,7 +45,7 @@ public class RetrievalModelIndri extends RetrievalModel {
                 return this.lambda;
             default:
                 throw new IllegalArgumentException
-                        ("Illegal arguement: BM25 doesn't have argument " + s);
+                        ("Illegal argument: Indri doesn't have argument " + s);
         }
     }
 }

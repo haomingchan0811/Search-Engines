@@ -52,7 +52,7 @@ public class RetrievalModelBM25 extends RetrievalModel {
                 return this.k3;
             default:
                 throw new IllegalArgumentException
-                        ("Illegal arguement: BM25 doesn't have argument " + s);
+                        ("Illegal argument: BM25 doesn't have argument " + s);
         }
     }
 }

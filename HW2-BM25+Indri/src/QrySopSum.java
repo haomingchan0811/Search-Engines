@@ -39,6 +39,17 @@ public class QrySopSum extends QrySop {
 //	}
   }
 
+    /**
+     *  Get a default score for a document if docIteratorHasMatch doesn't matched.
+     *  @param r The retrieval model that determines how scores are calculated.
+     *  @param docid The document id to compute the default score
+     *  @return The document score.
+     *  @throws IOException Error accessing the Lucene index
+     */
+    public double getDefaultScore(RetrievalModel r, int docid) throws IOException{
+        return this.getScoreBM25(r);
+    }
+
   /**
    *  getScore for the BM25 retrieval model.
    *  @param r The retrieval model that determines how scores are calculated.
@@ -46,28 +57,24 @@ public class QrySopSum extends QrySop {
    *  @throws IOException Error accessing the Lucene index
    */
   private double getScoreBM25(RetrievalModel r) throws IOException {
-	  if(this.docIteratorHasMatchCache()) {
 
-		  // Initialize the score as zero
-		  double score = 0.0;
+      // Initialize the score as zero
+      double score = 0.0;
 
-          // Current matched document id
-          int docid = this.docIteratorGetMatch();
+      // Current matched document id
+      int docid = this.docIteratorGetMatch();
 
-		  /* Return the sum of scores of all query arguments that
-		   * match the current docid.(SUM uses docIteratorHasMatchMin)
-		   */
-		  for(int i = 0; i < this.args.size(); i++){
-			  QrySop q_i = (QrySop) this.args.get(i);
+      /* Return the sum of scores of all query arguments that
+       * match the current docid.(SUM uses docIteratorHasMatchMin)
+       */
+      for(int i = 0; i < this.args.size(); i++){
+          QrySop q_i = (QrySop) this.args.get(i);
 
-			  // check whether this specific argument exists in the current doc
-			  if(q_i.docIteratorHasMatch(r) && docid == q_i.docIteratorGetMatch())
-			      score += q_i.getScore(r);
-		  }
-		  return score;
-	  }
-	  else
-		  return 0.0;
+          // check whether this specific argument exists in the current doc
+          if(q_i.docIteratorHasMatch(r) && docid == q_i.docIteratorGetMatch())
+              score += q_i.getScore(r);
+      }
+      return score;
   }
 
 //  /**

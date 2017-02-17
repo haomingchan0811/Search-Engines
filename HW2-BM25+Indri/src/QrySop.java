@@ -14,22 +14,32 @@ import java.io.*;
  */
 public abstract class QrySop extends Qry {
 
-  /**
-   *  Get a score for the document that docIteratorHasMatch matched.
-   *  @param r The retrieval model that determines how scores are calculated.
-   *  @return The document score.
-   *  @throws IOException Error accessing the Lucene index
-   */
-  public abstract double getScore (RetrievalModel r) throws IOException;
+    /**
+     *  Get a score for the document that docIteratorHasMatch matched.
+     *  @param r The retrieval model that determines how scores are calculated.
+     *  @return The document score.
+     *  @throws IOException Error accessing the Lucene index
+     */
+    public abstract double getScore(RetrievalModel r) throws IOException;
 
-  /**
-   *  Initialize the query operator (and its arguments), including any
-   *  internal iterators.  If the query operator is of type QryIop, it
-   *  is fully evaluated, and the results are stored in an internal
-   *  inverted list that may be accessed via the internal iterator.
-   *  @param r A retrieval model that guides initialization
-   *  @throws IOException Error accessing the Lucene index.
-   */
+
+    /**
+     *  Get a default score for a document if docIteratorHasMatch doesn't matched.
+     *  @param r The retrieval model that determines how scores are calculated.
+     *  @param docid The document id to compute the default score
+     *  @return The document score.
+     *  @throws IOException Error accessing the Lucene index
+     */
+    public abstract double getDefaultScore(RetrievalModel r, int docid) throws IOException;
+
+    /**
+     *  Initialize the query operator (and its arguments), including any
+     *  internal iterators.  If the query operator is of type QryIop, it
+     *  is fully evaluated, and the results are stored in an internal
+     *  inverted list that may be accessed via the internal iterator.
+     *  @param r A retrieval model that guides initialization
+     *  @throws IOException Error accessing the Lucene index.
+     */
   public void initialize(RetrievalModel r) throws IOException {
       for (Qry q_i: this.args) {
           q_i.initialize(r);
