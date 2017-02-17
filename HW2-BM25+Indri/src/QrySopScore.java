@@ -128,7 +128,7 @@ public class QrySopScore extends QrySop{
          */
             double df = this.getArg(0).getDf();
             // number of documents in the corpus
-            // Bug: N in IDF is different from N_field from avg_docLen
+            // Bug: N in IDF is different from N_field in avg_docLen
             double N = Idx.getNumDocs();
             // restrict RSJ weight to be non-negative
             double idfWeight = Math.max(0.0, Math.log((N - df + 0.5) / (df + 0.5)));
@@ -144,16 +144,8 @@ public class QrySopScore extends QrySop{
             double avg_docLen = Idx.getSumOfFieldLengths(field) / N_field;
             double tfWeight = tf / (tf + k1 * (1.0 - b + b * docLen / avg_docLen));
 
-        /*
-         * Compute the user weight of Okapi BMxx model. For HW2: qtf will
-         * always be 1, "apple pie pie" is the same as "apple pie".
-         */
-            double k3 = bm25.getParam("k3");
-            double qtf = 1.0;
-            double userWeight = (k3 + 1.0) * qtf / (k3 + qtf);
-
             // Final BM25 score for this term in a specific doc
-            return idfWeight * tfWeight * userWeight;
+            return idfWeight * tfWeight;  // bug: userWeight is computed in QrySopSum
         }
         else return 0.0;
     }

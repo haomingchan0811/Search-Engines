@@ -74,6 +74,15 @@ public class QrySopSum extends QrySop {
               if(q_i.docIteratorHasMatch(r) && docid == q_i.docIteratorGetMatch())
                   score += q_i.getScore(r);
           }
+
+          /*
+//         * Compute the user weight of Okapi BMxx model. For HW2: qtf
+//         * will always be 1, "apple pie pie" is the same as "apple pie".
+//         */
+//          double k3 = bm25.getParam("k3");
+//          double qtf = 1.0;
+//          double userWeight = (k3 + 1.0) * qtf / (k3 + qtf);
+
           return score;
       }
       else return 0.0;

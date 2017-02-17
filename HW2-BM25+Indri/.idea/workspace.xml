@@ -4,7 +4,6 @@
     <list default="true" id="1b153776-ec61-42a1-9ef4-4891eb661ba7" name="Default" comment="">
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/QrySopScore.java" afterPath="$PROJECT_DIR$/src/QrySopScore.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/QrySopSum.java" afterPath="$PROJECT_DIR$/src/QrySopSum.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/RetrievalModelIndri.java" afterPath="$PROJECT_DIR$/src/RetrievalModelIndri.java" />
     </list>
     <ignored path="$PROJECT_DIR$/out/" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -107,8 +106,8 @@
       <file leaf-file-name="QrySopScore.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/QrySopScore.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="432">
-              <caret line="130" column="70" lean-forward="false" selection-start-line="130" selection-start-column="70" selection-end-line="130" selection-end-column="70" />
+            <state relative-caret-position="517">
+              <caret line="105" column="0" lean-forward="true" selection-start-line="105" selection-start-column="0" selection-end-line="105" selection-end-column="0" />
               <folding>
                 <element signature="n#!!doc" expanded="true" />
               </folding>
@@ -129,13 +128,13 @@
       <file leaf-file-name="QrySopSum.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/QrySopSum.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="557">
-              <caret line="80" column="0" lean-forward="true" selection-start-line="80" selection-start-column="0" selection-end-line="80" selection-end-column="0" />
+            <state relative-caret-position="540">
+              <caret line="79" column="18" lean-forward="false" selection-start-line="79" selection-start-column="18" selection-end-line="79" selection-end-column="18" />
               <folding>
                 <element signature="e#448#449#0" expanded="true" />
                 <element signature="e#494#495#0" expanded="true" />
                 <element signature="e#846#897#0" expanded="false" />
-                <element signature="e#2674#2681#0" expanded="false" />
+                <element signature="e#2987#2994#0" expanded="false" />
               </folding>
             </state>
           </provider>
@@ -175,8 +174,8 @@
         <option value="$PROJECT_DIR$/src/QrySopOr.java" />
         <option value="$PROJECT_DIR$/src/QryEval.java" />
         <option value="$PROJECT_DIR$/src/RetrievalModelIndri.java" />
-        <option value="$PROJECT_DIR$/src/QrySopSum.java" />
         <option value="$PROJECT_DIR$/src/QrySopScore.java" />
+        <option value="$PROJECT_DIR$/src/QrySopSum.java" />
       </list>
     </option>
   </component>
@@ -923,19 +922,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/QrySopSum.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="557">
-          <caret line="80" column="0" lean-forward="true" selection-start-line="80" selection-start-column="0" selection-end-line="80" selection-end-column="0" />
-          <folding>
-            <element signature="e#448#449#0" expanded="true" />
-            <element signature="e#494#495#0" expanded="true" />
-            <element signature="e#846#897#0" expanded="false" />
-            <element signature="e#2674#2681#0" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/QryIop.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="262">
@@ -959,10 +945,23 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/src/QrySopSum.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="540">
+          <caret line="79" column="18" lean-forward="false" selection-start-line="79" selection-start-column="18" selection-end-line="79" selection-end-column="18" />
+          <folding>
+            <element signature="e#448#449#0" expanded="true" />
+            <element signature="e#494#495#0" expanded="true" />
+            <element signature="e#846#897#0" expanded="false" />
+            <element signature="e#2987#2994#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/src/QrySopScore.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="432">
-          <caret line="130" column="70" lean-forward="false" selection-start-line="130" selection-start-column="70" selection-end-line="130" selection-end-column="70" />
+        <state relative-caret-position="517">
+          <caret line="105" column="0" lean-forward="true" selection-start-line="105" selection-start-column="0" selection-end-line="105" selection-end-column="0" />
           <folding>
             <element signature="n#!!doc" expanded="true" />
           </folding>
