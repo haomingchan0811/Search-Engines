@@ -11,8 +11,7 @@ import java.util.Map;
  )*/
 public class RetrievalModelIndri extends RetrievalModel {
 
-    private int mu;
-    private double lambda;
+    private double mu, lambda;
 
 	public String defaultQrySopName() {
 		return new String("#and");
