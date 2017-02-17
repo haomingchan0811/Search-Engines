@@ -85,6 +85,37 @@ public class QrySopScore extends QrySop{
     }
 
     /**
+     *  getScore for the Indri retrieval model.
+     *  @param r The retrieval model that determines how scores are calculated.
+     *  @return The document score.
+     *  @throws IOException Error accessing the Lucene index
+     */
+    private double getScoreIndri(RetrievalModel r) throws IOException{
+
+        // Cast model type into Indri
+        RetrievalModelIndri Indri = (RetrievalModelIndri) r;
+
+        // fetch parameters of Indri
+        double mu = Indri.getParam("mu");
+        double lambda = Indri.getParam("lambda");
+
+        String field = this.getArg(0).getField();
+        int docid = this.getArg(0).docIteratorGetMatch();
+        double lenCorpus = Idx.getSumOfFieldLengths(field);
+        double lenDoc = Idx.getFieldLength(field, docid);
+        double tf = this.getArg(0).docIteratorGetMatchPosting().tf;
+        double ctf = this.getArg(0).getCtf();
+
+//        // MLE of Prob(term in the collection)
+//        double p = ctf / lenCorpus;
+
+        // compute p here to preserve floating point precision
+        double score = (1 - lambda) * (tf + mu * ctf / lenCorpus) / (lenDoc + mu)
+                + lambda * ctf / lenCorpus;
+        return score;
+    }
+
+    /**
      *  getScore for the BM25 retrieval model.
      *  @param r The retrieval model that determines how scores are calculated.
      *  @return The document score.
@@ -128,35 +159,6 @@ public class QrySopScore extends QrySop{
 
         // Final BM25 score for this term in a specific doc
         return idfWeight * tfWeight * userWeight;
-    }
-
-    /**
-     *  getScore for the Indri retrieval model.
-     *  @param r The retrieval model that determines how scores are calculated.
-     *  @return The document score.
-     *  @throws IOException Error accessing the Lucene index
-     */
-    private double getScoreIndri(RetrievalModel r) throws IOException{
-
-        // Cast model type into Indri
-        RetrievalModelIndri Indri = (RetrievalModelIndri) r;
-
-        // fetch parameters of Indri
-        double mu = Indri.getParam("mu");
-        double lambda = Indri.getParam("lambda");
-
-        String field = this.getArg(0).getField();
-        int docid = this.getArg(0).docIteratorGetMatch();
-        double lenCorpus = Idx.getSumOfFieldLengths(field);
-        double lenDoc = Idx.getFieldLength(field, docid);
-        double tf = this.getArg(0).docIteratorGetMatchPosting().tf;
-        double ctf = this.getArg(0).getCtf();
-
-        // MLE of Prob(term in the collection)
-        double p = ctf / lenCorpus;
-
-        double score = (1 - lambda) * (tf + mu * p) / (lenDoc + mu) + lambda * p;
-        return score;
     }
 
     /**

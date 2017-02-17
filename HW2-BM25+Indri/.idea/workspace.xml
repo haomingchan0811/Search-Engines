@@ -2,9 +2,18 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="1b153776-ec61-42a1-9ef4-4891eb661ba7" name="Default" comment="">
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/out/production/HW2-BM25+Indri/QryIopWindow.class" />
       <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/QryIopWindow.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/production/HW2-BM25+Indri/QrySop.class" afterPath="$PROJECT_DIR$/out/production/HW2-BM25+Indri/QrySop.class" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/production/HW2-BM25+Indri/QrySopAnd.class" afterPath="$PROJECT_DIR$/out/production/HW2-BM25+Indri/QrySopAnd.class" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/production/HW2-BM25+Indri/QrySopOr.class" afterPath="$PROJECT_DIR$/out/production/HW2-BM25+Indri/QrySopOr.class" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/production/HW2-BM25+Indri/QrySopScore.class" afterPath="$PROJECT_DIR$/out/production/HW2-BM25+Indri/QrySopScore.class" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/production/HW2-BM25+Indri/QrySopSum.class" afterPath="$PROJECT_DIR$/out/production/HW2-BM25+Indri/QrySopSum.class" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/production/HW2-BM25+Indri/RetrievalModelBM25.class" afterPath="$PROJECT_DIR$/out/production/HW2-BM25+Indri/RetrievalModelBM25.class" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/production/HW2-BM25+Indri/RetrievalModelIndri.class" afterPath="$PROJECT_DIR$/out/production/HW2-BM25+Indri/RetrievalModelIndri.class" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/parameterFile.txt" afterPath="$PROJECT_DIR$/parameterFile.txt" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/QryEval.java" afterPath="$PROJECT_DIR$/src/QryEval.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/QryIop.java" afterPath="$PROJECT_DIR$/src/QryIop.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/QrySop.java" afterPath="$PROJECT_DIR$/src/QrySop.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/QrySopAnd.java" afterPath="$PROJECT_DIR$/src/QrySopAnd.java" />
@@ -31,6 +40,27 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
+      <file leaf-file-name="QryEval.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/QryEval.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="411">
+              <caret line="256" column="64" lean-forward="true" selection-start-line="256" selection-start-column="64" selection-end-line="256" selection-end-column="64" />
+              <folding>
+                <element signature="imports" expanded="true" />
+                <element signature="docComment;class#QryEval#0" expanded="false" />
+                <element signature="method#main#0;class#QryEval#0" expanded="false" />
+                <element signature="e#1628#1692#0" expanded="false" />
+                <element signature="e#1854#1920#0" expanded="false" />
+                <element signature="e#3938#3997#0" expanded="false" />
+                <element signature="method#printMemoryUsage#0;class#QryEval#0" expanded="false" />
+                <element signature="docComment;method#printResults#0;class#QryEval#0" expanded="false" />
+                <element signature="docComment;method#readParameterFile#0;class#QryEval#0" expanded="false" />
+                <element signature="method#readParameterFile#0;class#QryEval#0" expanded="false" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
       <file leaf-file-name="RetrievalModelBM25.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/RetrievalModelBM25.java">
           <provider selected="true" editor-type-id="text-editor">
@@ -61,23 +91,6 @@
               <caret line="12" column="22" lean-forward="false" selection-start-line="12" selection-start-column="22" selection-end-line="12" selection-end-column="22" />
               <folding>
                 <element signature="n#!!doc" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="QryIop.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/QryIop.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1989">
-              <caret line="124" column="17" lean-forward="false" selection-start-line="124" selection-start-column="17" selection-end-line="124" selection-end-column="17" />
-              <folding>
-                <element signature="e#4130#4131#0" expanded="true" />
-                <element signature="e#4194#4195#0" expanded="true" />
-                <element signature="e#4460#4461#0" expanded="true" />
-                <element signature="e#4521#4522#0" expanded="true" />
-                <element signature="e#4789#4790#0" expanded="true" />
-                <element signature="e#4826#4827#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -129,11 +142,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="QrySopScore.java" pinned="false" current-in-tab="false">
+      <file leaf-file-name="QrySopScore.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/QrySopScore.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1914">
-              <caret line="162" column="46" lean-forward="true" selection-start-line="162" selection-start-column="46" selection-end-line="162" selection-end-column="46" />
+            <state relative-caret-position="-119">
+              <caret line="115" column="5" lean-forward="true" selection-start-line="115" selection-start-column="5" selection-end-line="115" selection-end-column="5" />
               <folding>
                 <element signature="n#!!doc" expanded="true" />
               </folding>
@@ -141,10 +154,10 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="QrySopSum.java" pinned="false" current-in-tab="true">
+      <file leaf-file-name="QrySopSum.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/QrySopSum.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="571">
+            <state relative-caret-position="469">
               <caret line="73" column="56" lean-forward="false" selection-start-line="73" selection-start-column="56" selection-end-line="73" selection-end-column="56" />
               <folding>
                 <element signature="e#448#449#0" expanded="true" />
@@ -178,7 +191,6 @@
       <list>
         <option value="$PROJECT_DIR$/src/RetrievalModelRankedBoolean.java" />
         <option value="$PROJECT_DIR$/src/RetrievalModelUnrankedBoolean.java" />
-        <option value="$PROJECT_DIR$/src/QryEval.java" />
         <option value="$PROJECT_DIR$/src/QryParser.java" />
         <option value="$PROJECT_DIR$/src/RetrievalModel.java" />
         <option value="$PROJECT_DIR$/src/Qry.java" />
@@ -190,6 +202,7 @@
         <option value="$PROJECT_DIR$/src/QrySopAnd.java" />
         <option value="$PROJECT_DIR$/src/QrySopSum.java" />
         <option value="$PROJECT_DIR$/src/QrySopOr.java" />
+        <option value="$PROJECT_DIR$/src/QryEval.java" />
         <option value="$PROJECT_DIR$/src/QrySopScore.java" />
       </list>
     </option>
@@ -827,26 +840,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/QryEval.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="513">
-          <caret line="166" column="52" lean-forward="false" selection-start-line="166" selection-start-column="44" selection-end-line="166" selection-end-column="52" />
-          <folding>
-            <element signature="imports" expanded="true" />
-            <element signature="docComment;class#QryEval#0" expanded="false" />
-            <element signature="method#main#0;class#QryEval#0" expanded="false" />
-            <element signature="e#1628#1692#0" expanded="false" />
-            <element signature="e#1854#1920#0" expanded="false" />
-            <element signature="e#3938#3997#0" expanded="false" />
-            <element signature="method#printMemoryUsage#0;class#QryEval#0" expanded="false" />
-            <element signature="docComment;method#printResults#0;class#QryEval#0" expanded="false" />
-            <element signature="method#printResults#0;class#QryEval#0" expanded="false" />
-            <element signature="docComment;method#readParameterFile#0;class#QryEval#0" expanded="false" />
-            <element signature="method#readParameterFile#0;class#QryEval#0" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/QryIop.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="1989">
@@ -929,25 +922,44 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/QrySopScore.java">
+    <entry file="file://$PROJECT_DIR$/src/QryEval.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1914">
-          <caret line="162" column="46" lean-forward="true" selection-start-line="162" selection-start-column="46" selection-end-line="162" selection-end-column="46" />
+        <state relative-caret-position="411">
+          <caret line="256" column="64" lean-forward="true" selection-start-line="256" selection-start-column="64" selection-end-line="256" selection-end-column="64" />
           <folding>
-            <element signature="n#!!doc" expanded="true" />
+            <element signature="imports" expanded="true" />
+            <element signature="docComment;class#QryEval#0" expanded="false" />
+            <element signature="method#main#0;class#QryEval#0" expanded="false" />
+            <element signature="e#1628#1692#0" expanded="false" />
+            <element signature="e#1854#1920#0" expanded="false" />
+            <element signature="e#3938#3997#0" expanded="false" />
+            <element signature="method#printMemoryUsage#0;class#QryEval#0" expanded="false" />
+            <element signature="docComment;method#printResults#0;class#QryEval#0" expanded="false" />
+            <element signature="docComment;method#readParameterFile#0;class#QryEval#0" expanded="false" />
+            <element signature="method#readParameterFile#0;class#QryEval#0" expanded="false" />
           </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/QrySopSum.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="571">
+        <state relative-caret-position="469">
           <caret line="73" column="56" lean-forward="false" selection-start-line="73" selection-start-column="56" selection-end-line="73" selection-end-column="56" />
           <folding>
             <element signature="e#448#449#0" expanded="true" />
             <element signature="e#494#495#0" expanded="true" />
             <element signature="e#846#897#0" expanded="false" />
             <element signature="e#2561#2568#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/QrySopScore.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-119">
+          <caret line="115" column="5" lean-forward="true" selection-start-line="115" selection-start-column="5" selection-end-line="115" selection-end-column="5" />
+          <folding>
+            <element signature="n#!!doc" expanded="true" />
           </folding>
         </state>
       </provider>

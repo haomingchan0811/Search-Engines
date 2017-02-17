@@ -243,19 +243,19 @@ public class QryEval {
     
     // Dummy output when no documents are retrieved 
     if(result.size() < 1){
-		System.out.println(prefix + " dummy 1 0 haominc_HW1");
-		writer.println(prefix + " dummy 1 0 haomingc_HW1");
+		System.out.println(prefix + " dummy 1 0 haominc_HW2");
+		writer.println(prefix + " dummy 1 0 haomingc_HW2");
     }
     else{
 	    /* Result with descending score then ascending external docid if tie exists.
 	   	 * Output N (outputLength) documents per query or all if N < result.size()
 	   	 */
 	   	for(int i = 0; i < result.size() && i < outputLength; i++) {
-	   		System.out.println(String.format("%s %s %s %s haomingc_HW1", prefix, 
+	   		System.out.println(String.format("%s %s %s %s haomingc_HW2", prefix,
     		Idx.getExternalDocid(result.getDocid(i)), i + 1, result.getDocidScore(i)));
     			    	
 	    	// Write the results to the file in trec_eval format
-	    	writer.println(String.format("%s %s %s %s haomingc_HW1", prefix, 
+	    	writer.println(String.format("%s %s %s %s haomingc_HW2", prefix,
 	   		Idx.getExternalDocid(result.getDocid(i)), i + 1, result.getDocidScore(i)));
 	   	}
     }
