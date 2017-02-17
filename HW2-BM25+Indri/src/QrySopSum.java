@@ -57,24 +57,26 @@ public class QrySopSum extends QrySop {
    *  @throws IOException Error accessing the Lucene index
    */
   private double getScoreBM25(RetrievalModel r) throws IOException {
+      if(this.docIteratorHasMatch(r)){
+          // Initialize the score as zero
+          double score = 0.0;
 
-      // Initialize the score as zero
-      double score = 0.0;
-
-      // Current matched document id
-      int docid = this.docIteratorGetMatch();
+          // Current matched document id
+          int docid = this.docIteratorGetMatch();
 
       /* Return the sum of scores of all query arguments that
        * match the current docid.(SUM uses docIteratorHasMatchMin)
        */
-      for(int i = 0; i < this.args.size(); i++){
-          QrySop q_i = (QrySop) this.args.get(i);
+          for(int i = 0; i < this.args.size(); i++){
+              QrySop q_i = (QrySop) this.args.get(i);
 
-          // check whether this specific argument exists in the current doc
-          if(q_i.docIteratorHasMatch(r) && docid == q_i.docIteratorGetMatch())
-              score += q_i.getScore(r);
+              // check whether this specific argument exists in the current doc
+              if(q_i.docIteratorHasMatch(r) && docid == q_i.docIteratorGetMatch())
+                  score += q_i.getScore(r);
+          }
+          return score;
       }
-      return score;
+      else return 0.0;
   }
 
 //  /**

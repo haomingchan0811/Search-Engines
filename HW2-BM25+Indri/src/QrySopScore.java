@@ -14,12 +14,6 @@ public class QrySopScore extends QrySop{
      *  Document-independent values that should be determined just once.
      *  Some retrieval models have these, some don't.
      */
-    // number of documents in the corpus
-//    private double N;
-//
-//    public QrySopScore() throws IOException {
-//        N = Idx.getNumDocs();
-//    }
   
   /**
    *  Indicates whether the query has a match.
@@ -101,6 +95,7 @@ public class QrySopScore extends QrySop{
 
         String field = this.getArg(0).getField();
         int docid = this.getArg(0).docIteratorGetMatch();
+
         double lenCorpus = Idx.getSumOfFieldLengths(field);
         double lenDoc = Idx.getFieldLength(field, docid);
         double tf = this.getArg(0).docIteratorGetMatchPosting().tf;
@@ -110,8 +105,7 @@ public class QrySopScore extends QrySop{
         double p = ctf / lenCorpus;
 
         // compute p here to preserve floating point precision: no use
-        double score = (1 - lambda) * (tf + mu * p) / (lenDoc + mu)
-                + lambda * p;
+        double score = (1 - lambda) * (tf + mu * p) / (lenDoc + mu) + lambda * p;
         return score;
     }
 
@@ -126,28 +120,28 @@ public class QrySopScore extends QrySop{
             // Cast model type into BM25
             RetrievalModelBM25 bm25 = (RetrievalModelBM25)r;
 
-            // Get the posting associated with this term in a specific doc
-            InvList.DocPosting inv = this.getArg(0).docIteratorGetMatchPosting();
-            int docid = inv.docid;
+            int docid = this.getArg(0).docIteratorGetMatch();
+            String field = this.getArg(0).getField();
 
         /*
          * Compute the RSJ (idf) weight of Okapi BMxx model
          */
             double df = this.getArg(0).getDf();
-            String field = this.getArg(0).getField();
-            double N = Idx.getDocCount(field);      // number of documents in the field
+            // number of documents in the corpus
+            // Bug: N in IDF is different from N_field from avg_docLen
+            double N = Idx.getNumDocs();
             // restrict RSJ weight to be non-negative
             double idfWeight = Math.max(0.0, Math.log((N - df + 0.5) / (df + 0.5)));
-            // double idfWeight = Math.log((N - df + 0.5) / (df + 0.5));
 
         /*
          * Compute the tf weight of Okapi BMxx model
          */
-            double tf = inv.tf;
+            double tf = this.getArg(0).docIteratorGetMatchPosting().tf;
             double k1 = bm25.getParam("k1");
             double b = bm25.getParam("b");
             double docLen = Idx.getFieldLength(field, docid);
-            double avg_docLen = Idx.getSumOfFieldLengths(field) / N;
+            double N_field = Idx.getDocCount(field);      // number of documents in the field
+            double avg_docLen = Idx.getSumOfFieldLengths(field) / N_field;
             double tfWeight = tf / (tf + k1 * (1.0 - b + b * docLen / avg_docLen));
 
         /*

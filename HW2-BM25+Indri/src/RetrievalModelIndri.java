@@ -26,7 +26,7 @@ public class RetrievalModelIndri extends RetrievalModel {
                     ("Required parameters for Indri model were missing from the parameter file.");
         }
 
-        mu = Integer.parseInt(param.get("Indri:mu"));
+        mu = Double.parseDouble(param.get("Indri:mu"));
         if(mu < 0) throw new IllegalArgumentException
                 ("Illegal argument: " + param.get("Indri:mu") + ", mu is an integer >= 0");
 
