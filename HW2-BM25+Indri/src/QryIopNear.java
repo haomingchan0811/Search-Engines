@@ -73,7 +73,9 @@ public class QryIopNear extends QryIop {
 				   	
 	    			boolean moreLoc = true; // whether there're more locations to search			
 //	    	    	System.out.println("found a document");
-	    			while(moreLoc) {	    			
+
+					// whether there're more potential locations to match in this document
+					while(moreLoc) {
 //		    	    	System.out.println("looking for positions of doc" + docid_0);
 		    	    	
 				    	boolean locMatchFound = false;

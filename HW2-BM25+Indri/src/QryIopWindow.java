@@ -22,7 +22,15 @@ public class QryIopWindow extends QryIop {
 	/**
 	 *  Evaluate the query operator; the result is an internal inverted
 	 *  list that may be accessed via the internal iterators.
-	 *  @throws IOException Error accessing the Lucene index.
+     *
+	 *  Implementation:
+     *  Consider #WINDOW/n(a b c). Iterates down the locations for a, b, c in parallel. Suppose the three iterators
+     *  all start at the first location for each term. The window size that covers those 3 term occurrences is of size
+     *  1 + Max(a.currentloc, b.currentloc, c.currentloc) - Min(a.currentloc, b.currentloc, c.currentloc). If the size
+     *  is > N, advance the iterator that has the Min location. If the size is <= N, you have a match, and you advance
+     *  all 3 iterators. Continue until any iterator reaches the end of its location list.
+	 *
+     *  @throws IOException Error accessing the Lucene index.
 	 *  @throws IllegalArgumentException invalid number of arguments for the NEAR operator
 	 */
 	protected void evaluate()throws IOException {
@@ -76,13 +84,16 @@ public class QryIopWindow extends QryIop {
 				   	
 	    			boolean moreLoc = true; // whether there're more locations to search			
 //	    	    	System.out.println("found a document");
-	    			while(moreLoc) {	    			
+
+                    // whether there're more potential locations to match in this document
+	    			while(moreLoc) {
 //		    	    	System.out.println("looking for positions of doc" + docid_0);
 		    	    	
 				    	boolean locMatchFound = false;
-				    	int prevElemLoc = -1;
-				    	
-				    	// keep trying until a match is found or no match is possible
+                        int maxLoc = -1, minLoc = -1;    // initialize min & max location of all arguments
+                        QryIop minLocIte = null;      // record the argument that has the smallest location
+
+                        // keep trying until a match is found or no match is possible
 				    	while(!locMatchFound) {    	
 		    	    		// Get the locid of the first query argument.
 				    	 	QryIop loc_0 = (QryIop) q_0;
@@ -91,50 +102,52 @@ public class QryIopWindow extends QryIop {
 				    	 	if(!loc_0.locIteratorHasMatch()) {
 //				    	 		System.out.println("1st elem exhausted!!");
 				    	 		moreLoc = false; 
-			    	 			locMatchFound = false;
 				    	 		break;
-				    	 	}  	
-				    	 	int locid_0 = loc_0.locIteratorGetMatch();
-// 			    	    	System.out.println("locations found: " + locid_0);
+				    	 	}
+                            maxLoc = minLoc = loc_0.locIteratorGetMatch();  // use first argument's location
+                            minLocIte = loc_0;
+// 			    	    	System.out.println("locations found: " + loc_0);
 				    	 	
 				    	 	locMatchFound = true;	// other positions must satisfy the proximity constraint
-				    	
-				    	 	prevElemLoc = locid_0;  // location of the previous element 
-				    	
+
 				    	 	for(int i = 1; i < this.args.size(); i++) {
-				    	 		QryIop loc_i = (QryIop) this.args.get(i);
-				    	 		
-				    	 		loc_i.locIteratorAdvancePast(prevElemLoc);
-	
-				    	 		if(!loc_i.locIteratorHasMatch()) {
-//					    	 		System.out.println("elem exhausted!!");
-				    	 			moreLoc = false;
-				    	 			prevElemLoc = -1;
-					    	 		break; 			// locations exhausted. Done
-				    	 		}
-				    	 		int locid_i = loc_i.locIteratorGetMatch();
-//				    	 		System.out.println("location for 2nd: " + locid_i);
-				    	 		
-				    	 		// location proximity doesn't match
-				    	 		if(locid_i - prevElemLoc > distance) {
-				    	 			loc_0.locIteratorAdvance();
-				    	 			locMatchFound = false;
-				    	 			break;
-				    	 		}
-//				    	 		System.out.println("successfully found a match seq!");
-				    	 		prevElemLoc = locid_i;
-				    	 	}
+                                QryIop loc_i = (QryIop) this.args.get(i);
+
+                                if (!loc_i.locIteratorHasMatch()) {
+//                                    System.out.println((i + 1) + "th elem exhausted!!");
+                                    moreLoc = false;
+                                    maxLoc = -1;       // mark that element exhausted
+                                    break;             // locations exhausted for this argument. Done
+                                }
+                                int locid_i = loc_i.locIteratorGetMatch();
+                                maxLoc = Math.max(locid_i, maxLoc);
+                                if (minLoc > locid_i) {
+                                    minLoc = locid_i;
+                                    minLocIte = loc_i;
+                                }
+//                                System.out.println("location for 2nd: " + locid_i);
+                            }
 				    	}
-				    	if(locMatchFound && prevElemLoc != -1) {
-//			    	 		System.out.println("add into list: " + prevElemLoc);
-				    		positions.add(prevElemLoc);  // add the matched location
-				    		for(Qry q_i: this.args) {
-				    			QryIop loc_i = (QryIop) q_i;
-				    	 		loc_i.locIteratorAdvancePast(loc_i.locIteratorGetMatch());
-				    		}
-				    	}
+                        if(locMatchFound && maxLoc != -1){
+                            // location window constraint doesn't match
+                            if(maxLoc - minLoc + 1 > distance) {
+//                                System.out.println(String.format("minLoc=%d, maxLoc=%d, window=%d", minLoc, maxLoc, distance));
+//                                System.out.println("failed to satisfy window, move on");
+                                minLocIte.locIteratorAdvance();
+                            }
+                            else{
+//                                System.out.println("successfully found a match seq!");
+//                                System.out.println("add into list: " + maxLoc);
+                                positions.add(maxLoc);  // add the matched location
+                                for(Qry q_i: this.args) {
+                                    QryIop loc_i = (QryIop) q_i;
+                                    loc_i.locIteratorAdvancePast(loc_i.locIteratorGetMatch());
+                                }
+                            }
+                        }
+
 	    			}
-//	    			System.out.println(positions.size());
+//	    			System.out.println(String.format("Found %d locations", positions.size()));
 	    			if(positions.size() > 0) {
 		    			Collections.sort(positions);
 		    			this.invertedList.appendPosting(docid_0, positions);

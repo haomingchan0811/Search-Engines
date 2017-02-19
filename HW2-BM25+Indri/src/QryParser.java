@@ -76,42 +76,47 @@ public class QryParser {
    */
   private static Qry createOperator (String operatorName) {
 
-    Qry operator = null;
-    int operatorDistance = 0;
-    String operatorNameLowerCase = (new String(operatorName)).toLowerCase();
+      Qry operator = null;
+      //  int operatorDistance = 0;
+      String operatorNameLowerCase = (new String(operatorName)).toLowerCase();
 
-    //  Handle the distance argument to proximity operators such as
-    //  #near/n and #window/n.
+      //  Handle the distance argument to proximity operators such as
+      //  #near/n and #window/n.
 
-    //  STUDENT HW1 AND HW2 CODE HERE
-    
-    //  Create the query operator.
-    if(operatorNameLowerCase.length() > 5 && 
-    		operatorNameLowerCase.substring(0, 5).equals("#near")) {
-    		
-    	   // special case for the near/n operator
-  		operator = new QryIopNear(operatorNameLowerCase.substring(6)); 
-    }   
-    else{	
-	    switch (operatorNameLowerCase) {
-	      	case "#or":
-	      		operator = new QrySopOr();
-	      		break;
+      //  STUDENT HW1 AND HW2 CODE HERE
 
-	      	case "#and":
-	      		operator = new QrySopAnd();
-	      		break;
+      //  Create the query operator.
 
-            case "#sum":
-                operator = new QrySopSum();
-                break;
+      int opLen = operatorNameLowerCase.length();
+
+      // #NEAR/n operator
+      if(opLen > 5 && operatorNameLowerCase.substring(0, 5).equals("#near"))
+          operator = new QryIopNear(operatorNameLowerCase.substring(6));
+
+      // #WINDOW/n operator
+      else if(opLen > 7 && operatorNameLowerCase.substring(0, 7).equals("#window"))
+          operator = new QryIopWindow(operatorNameLowerCase.substring(8));
+
+      else{
+	      switch (operatorNameLowerCase) {
+              case "#or":
+                  operator = new QrySopOr();
+                  break;
+
+              case "#and":
+                  operator = new QrySopAnd();
+                  break;
+
+              case "#sum":
+                  operator = new QrySopSum();
+                  break;
 	
-	      	case "#syn":
-	      		operator = new QryIopSyn();
-	      		break;
+              case "#syn":
+                  operator = new QryIopSyn();
+                  break;
 	      
-	      	default:
-	      		syntaxError ("Unknown query operator " + operatorName);
+              default:
+                  syntaxError ("Unknown query operator " + operatorName);
 	    }
     }
 
