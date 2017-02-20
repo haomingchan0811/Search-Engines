@@ -313,73 +313,55 @@ public class QryParser {
     //  (e.g., "near-death") or a subquery (e.g., "#and (a b c)").
     //  Recurse on subqueries.
 
-      // deal with weighted operators (#WAND)
-      if(queryTree instanceof QrySopWAnd || queryTree instanceof QrySopWSum){
-          Vector<Double> weights = new Vector<>();   // initialize weights
+      // deal with weighted operators (#WAND or #WSUM)
+      boolean isWeighedOp = (queryTree instanceof QrySopWAnd)
+              || (queryTree instanceof QrySopWSum);
 
-          while(queryString.length() > 0) {
-              //  If the operator uses weighted query arguments, each pass of
-              //  this loop must handle "weight arg".  Handle the weight first.
+      Vector<Double> weights = new Vector<>();   // initialize weights
 
-              //  STUDENT HW2 CODE GOES HERE
+      while(queryString.length() > 0) {
+          //  If the operator uses weighted query arguments, each pass of
+          //  this loop must handle "weight arg".  Handle the weight first.
+
+          double currWeight = 1;  // initialize weight for the current argument
+
+          //  STUDENT HW2 CODE GOES HERE
+          if(isWeighedOp) {
               int idx = queryString.indexOf(' ');
-              double currWeight = Double.parseDouble(queryString.substring(0, idx));
+              currWeight = Double.parseDouble(queryString.substring(0, idx));
               queryString = queryString.substring(idx + 1);
-
-              //  Now handle the argument (which could be a subquery).
-              Qry[] qargs = null;
-              PopData<String,String> p;
-
-              if(queryString.charAt(0) == '#') {	// Subquery
-                  p = popSubquery (queryString);
-                  qargs = new Qry[1];
-                  qargs[0] = parseString(p.getPopped());
-              }
-              else {					// Term
-                  p = popTerm (queryString);
-                  qargs = createTerms(p.getPopped());
-              }
-
-              queryString = p.getRemaining().trim();	// Consume the arg
-
-              //  Add the argument(s) to the query tree.
-              for(int i = 0; i < qargs.length; i++) {
-
-                  // STUDENTS WILL NEED TO ADJUST THIS BLOCK TO HANDLE WEIGHTS IN HW2
-                  weights.add(currWeight);
-                  queryTree.appendArg(qargs[i]);
-              }
           }
-          if(queryTree instanceof QrySopWAnd)
-              ((QrySopWAnd)queryTree).weights = weights;
-          else
-              ((QrySopWSum)queryTree).weights = weights;
-      }
-      else{
-          while(queryString.length() > 0) {
 
-              Qry[] qargs = null;
-              PopData<String,String> p;
+          //  Now handle the argument (which could be a subquery).
+          Qry[] qargs = null;
+          PopData<String,String> p;
 
-              if(queryString.charAt(0) == '#') {	// Subquery
-                  p = popSubquery (queryString);
-                  qargs = new Qry[1];
-                  qargs[0] = parseString(p.getPopped());
-              }
-              else {					// Term
-                  p = popTerm (queryString);
-                  qargs = createTerms(p.getPopped());
-              }
+          if(queryString.charAt(0) == '#') {	// Subquery
+              p = popSubquery (queryString);
+              qargs = new Qry[1];
+              qargs[0] = parseString(p.getPopped());
+          }
+          else {					// Term
+              p = popTerm (queryString);
+              qargs = createTerms(p.getPopped());
+          }
 
-              queryString = p.getRemaining().trim();	// Consume the arg
+          queryString = p.getRemaining().trim();	// Consume the arg
 
-              //  Add the argument(s) to the query tree.
-              for(int i = 0; i < qargs.length; i++)
-                  queryTree.appendArg(qargs[i]);
+          //  Add the argument(s) to the query tree.
+          for(int i = 0; i < qargs.length; i++) {
+
+              // STUDENTS WILL NEED TO ADJUST THIS BLOCK TO HANDLE WEIGHTS IN HW2
+              if(isWeighedOp) weights.add(currWeight);
+              queryTree.appendArg(qargs[i]);
           }
       }
+      if(queryTree instanceof QrySopWAnd)
+          ((QrySopWAnd)queryTree).weights = weights;
+      if(queryTree instanceof QrySopWSum)
+          ((QrySopWSum)queryTree).weights = weights;
 
-    return queryTree;
+      return queryTree;
   }  
 
     
