@@ -367,7 +367,7 @@ public class QryParser {
               queryString = p.getRemaining().trim();	// Consume the arg
 
               //  Add the argument(s) to the query tree.
-              for(int i = 0; i < qargs.length; i++) 
+              for(int i = 0; i < qargs.length; i++)
                   queryTree.appendArg(qargs[i]);
           }
       }

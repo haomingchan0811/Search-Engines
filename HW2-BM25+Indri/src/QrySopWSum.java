@@ -6,9 +6,9 @@ import java.io.IOException;
 import java.util.Vector;
 
 /**
- *  The WAND operator for all retrieval models.
+ *  The WSUM operator for all retrieval models.
  */
-public class QrySopWAnd extends QrySop {
+public class QrySopWSum extends QrySop {
 
     // corresponding weights for arguments
     protected Vector<Double> weights;

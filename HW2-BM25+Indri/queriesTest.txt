@@ -1,1 +1,1 @@
-26:#WAND( 0.5 lower 0.3 heart 0.2 rate )
+12:#WSUM (0.5 djs.title 0.5 #AND(disk.body jockey.body) )
