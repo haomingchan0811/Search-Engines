@@ -118,6 +118,10 @@ public class QryParser {
               case "#wand":
                   operator = new QrySopWAnd();
                   break;
+
+              case "#wsum":
+                  operator = new QrySopWSum();
+                  break;
 	      
               default:
                   syntaxError ("Unknown query operator " + operatorName);
@@ -310,7 +314,7 @@ public class QryParser {
     //  Recurse on subqueries.
 
       // deal with weighted operators (#WAND)
-      if(queryTree instanceof QrySopWAnd){
+      if(queryTree instanceof QrySopWAnd || queryTree instanceof QrySopWSum){
           Vector<Double> weights = new Vector<>();   // initialize weights
 
           while(queryString.length() > 0) {
@@ -346,7 +350,10 @@ public class QryParser {
                   queryTree.appendArg(qargs[i]);
               }
           }
-          ((QrySopWAnd)queryTree).weights = weights;
+          if(queryTree instanceof QrySopWAnd)
+              ((QrySopWAnd)queryTree).weights = weights;
+          else
+              ((QrySopWSum)queryTree).weights = weights;
       }
       else{
           while(queryString.length() > 0) {

@@ -73,11 +73,12 @@ public class QrySopWAnd extends QrySop {
        */
         for(int i = 0; i < this.args.size(); i++){
             QrySop q_i = (QrySop) this.args.get(i);
-            score *= q_i.getDefaultScore(r, docid);
-        }
 
-        // normalized by geometric mean of query size
-        score = Math.pow(score, 1.0 / this.args.size());
+            // exponent of current term under the WAND operator
+            double exponent = this.weights.get(i) / this.total_Weights;
+
+            score *= Math.pow(q_i.getDefaultScore(r, docid), exponent);
+        }
         return score;
     }
 
@@ -100,21 +101,14 @@ public class QrySopWAnd extends QrySop {
         for(int i = 0; i < this.args.size(); i++){
             QrySop q_i = (QrySop) this.args.get(i);
 
-            double exponent;
             // exponent of current term under the WAND operator
-            if(!this.weights.isEmpty())
-                exponent = this.weights.get(i) / this.total_Weights;
-            else exponent = 1.0;
+            double exponent = this.weights.get(i) / this.total_Weights;
 
             if(q_i.docIteratorHasMatch(r) && q_i.docIteratorGetMatch() == docid)
                 score *= Math.pow(q_i.getScore(r), exponent);
             else
                 score *= Math.pow(q_i.getDefaultScore(r, docid), exponent);
         }
-
-        // normalized by geometric mean of query size (#AND operator)
-        if(this.weights.isEmpty())
-            score = Math.pow(score, 1.0 / this.args.size());
         return score;
     }
 

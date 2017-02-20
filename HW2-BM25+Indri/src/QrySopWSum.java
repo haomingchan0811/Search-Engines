@@ -33,29 +33,28 @@ public class QrySopWSum extends QrySop {
           return this.docIteratorHasMatchMin(r);
       else
           throw new IllegalArgumentException
-                  (r.getClass().getName() + " doesn't support the WAND operator.");
-//          return this.docIteratorHasMatchAll(r);
+                  (r.getClass().getName() + " doesn't support the WSUM operator.");
   }
 
-  /**
-   *  Get a score for the document that docIteratorHasMatch matched.
-   *  @param r The retrieval model that determines how scores are calculated.
-   *  @return The document score.
-   *  @throws IOException Error accessing the Lucene index
-   */
-  public double getScore(RetrievalModel r) throws IOException {
+    /**
+     *  Get a score for the document that docIteratorHasMatch matched.
+     *  @param r The retrieval model that determines how scores are calculated.
+     *  @return The document score.
+     *  @throws IOException Error accessing the Lucene index
+     */
+    public double getScore(RetrievalModel r) throws IOException {
 //    if(r instanceof RetrievalModelUnrankedBoolean)
 //        return this.getScoreUnrankedBoolean(r);
 //
 //    else if(r instanceof RetrievalModelRankedBoolean)
 //        return this.getScoreRankedBoolean(r);
 
-      if(r instanceof RetrievalModelIndri)
-          return this.getScoreIndri(r);
-      else
-          throw new IllegalArgumentException
-        (r.getClass().getName() + " doesn't support the WAND operator.");
-  }
+        if(r instanceof RetrievalModelIndri)
+            return this.getScoreIndri(r);
+        else
+            throw new IllegalArgumentException
+                    (r.getClass().getName() + " doesn't support the WSUM operator.");
+    }
 
     /**
      *  Get a default score for a document if docIteratorHasMatch doesn't matched.
@@ -65,19 +64,20 @@ public class QrySopWSum extends QrySop {
      *  @throws IOException Error accessing the Lucene index
      */
     public double getDefaultScore(RetrievalModel r, int docid) throws IOException{
-        double score = 1.0;                      // Initialize the score
+        double score = 0;                      // Initialize the score
 
-      /* Return the multiplication of scores of all query arguments.
+      /* Return the weighted sum of scores of all query arguments.
        * Note that AND in Indri is different from AND in Boolean, it uses
        * docIteratorHasMatchMin, so we need to check whether docid matches.
        */
         for(int i = 0; i < this.args.size(); i++){
             QrySop q_i = (QrySop) this.args.get(i);
-            score *= q_i.getDefaultScore(r, docid);
-        }
 
-        // normalized by geometric mean of query size
-        score = Math.pow(score, 1.0 / this.args.size());
+            // weight of current term under the WSUM operator
+            double weight = this.weights.get(i) / this.total_Weights;
+
+            score += weight * q_i.getDefaultScore(r, docid);
+        }
         return score;
     }
 
@@ -90,31 +90,24 @@ public class QrySopWSum extends QrySop {
      */
     private double getScoreIndri(RetrievalModel r) throws IOException{
         initializeWeights();
-        double score = 1.0;                      // Initialize the score
+        double score = 0.0;                      // Initialize the score
         int docid = this.docIteratorGetMatch();  // Current document id
 
-      /* Return the multiplication of scores of all query arguments.
+      /* Return the weighted sum of scores of all query arguments.
        * Note that AND in Indri is different from AND in Boolean, it uses
        * docIteratorHasMatchMin, so we need to check whether docid matches.
        */
         for(int i = 0; i < this.args.size(); i++){
             QrySop q_i = (QrySop) this.args.get(i);
 
-            double exponent;
-            // exponent of current term under the WAND operator
-            if(!this.weights.isEmpty())
-                exponent = this.weights.get(i) / this.total_Weights;
-            else exponent = 1.0;
+            // weight of current term under the WSUM operator
+            double weight = this.weights.get(i) / this.total_Weights;
 
             if(q_i.docIteratorHasMatch(r) && q_i.docIteratorGetMatch() == docid)
-                score *= Math.pow(q_i.getScore(r), exponent);
+                score += weight * q_i.getScore(r);
             else
-                score *= Math.pow(q_i.getDefaultScore(r, docid), exponent);
+                score += weight * q_i.getDefaultScore(r, docid);
         }
-
-        // normalized by geometric mean of query size (#AND operator)
-        if(this.weights.isEmpty())
-            score = Math.pow(score, 1.0 / this.args.size());
         return score;
     }
 
