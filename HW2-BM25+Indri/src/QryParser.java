@@ -114,6 +114,10 @@ public class QryParser {
               case "#syn":
                   operator = new QryIopSyn();
                   break;
+
+              case "#wand":
+                  operator = new QrySopWAnd();
+                  break;
 	      
               default:
                   syntaxError ("Unknown query operator " + operatorName);
@@ -305,38 +309,68 @@ public class QryParser {
     //  (e.g., "near-death") or a subquery (e.g., "#and (a b c)").
     //  Recurse on subqueries.
 
-    while(queryString.length() > 0) {
-	
-      //  If the operator uses weighted query arguments, each pass of
-      //  this loop must handle "weight arg".  Handle the weight first.
+      // deal with weighted operators (#WAND)
+      if(queryTree instanceof QrySopWAnd){
+          Vector<Double> weights = new Vector<>();   // initialize weights
 
-      //  STUDENT HW2 CODE GOES HERE
+          while(queryString.length() > 0) {
+              //  If the operator uses weighted query arguments, each pass of
+              //  this loop must handle "weight arg".  Handle the weight first.
 
-      //  Now handle the argument (which could be a subquery).
+              //  STUDENT HW2 CODE GOES HERE
+              int idx = queryString.indexOf(' ');
+              double currWeight = Double.parseDouble(queryString.substring(0, idx));
+              queryString = queryString.substring(idx + 1);
 
-      Qry[] qargs = null;
-      PopData<String,String> p;
+              //  Now handle the argument (which could be a subquery).
+              Qry[] qargs = null;
+              PopData<String,String> p;
 
-      if(queryString.charAt(0) == '#') {	// Subquery
-    	  p = popSubquery (queryString);
-    	  qargs = new Qry[1];
-    	  qargs[0] = parseString(p.getPopped());
-      } 
-      else {					// Term
-    	  p = popTerm (queryString);
-    	  qargs = createTerms(p.getPopped());
+              if(queryString.charAt(0) == '#') {	// Subquery
+                  p = popSubquery (queryString);
+                  qargs = new Qry[1];
+                  qargs[0] = parseString(p.getPopped());
+              }
+              else {					// Term
+                  p = popTerm (queryString);
+                  qargs = createTerms(p.getPopped());
+              }
+
+              queryString = p.getRemaining().trim();	// Consume the arg
+
+              //  Add the argument(s) to the query tree.
+              for(int i = 0; i < qargs.length; i++) {
+
+                  // STUDENTS WILL NEED TO ADJUST THIS BLOCK TO HANDLE WEIGHTS IN HW2
+                  weights.add(currWeight);
+                  queryTree.appendArg(qargs[i]);
+              }
+          }
+          ((QrySopWAnd)queryTree).weights = weights;
       }
+      else{
+          while(queryString.length() > 0) {
 
-      queryString = p.getRemaining().trim();	// Consume the arg
+              Qry[] qargs = null;
+              PopData<String,String> p;
 
-      //  Add the argument(s) to the query tree.
-      for(int i = 0; i < qargs.length; i++) {
+              if(queryString.charAt(0) == '#') {	// Subquery
+                  p = popSubquery (queryString);
+                  qargs = new Qry[1];
+                  qargs[0] = parseString(p.getPopped());
+              }
+              else {					// Term
+                  p = popTerm (queryString);
+                  qargs = createTerms(p.getPopped());
+              }
 
-	//  STUDENTS WILL NEED TO ADJUST THIS BLOCK TO HANDLE WEIGHTS IN HW2
+              queryString = p.getRemaining().trim();	// Consume the arg
 
-    	  queryTree.appendArg(qargs[i]);
+              //  Add the argument(s) to the query tree.
+              for(int i = 0; i < qargs.length; i++) 
+                  queryTree.appendArg(qargs[i]);
+          }
       }
-    }
 
     return queryTree;
   }  

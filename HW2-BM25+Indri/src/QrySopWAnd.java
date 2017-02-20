@@ -3,11 +3,21 @@
  */
 
 import java.io.IOException;
+import java.util.Vector;
 
 /**
- *  The AND operator for all retrieval models.
+ *  The WAND operator for all retrieval models.
  */
 public class QrySopWAnd extends QrySop {
+
+    protected Vector<Double> weights;
+    private double total_Weights;
+
+    public void initializeWeights(){
+        this.total_Weights = 0;
+        for(int i = 0; i < this.weights.size(); i++)
+            this.total_Weights += this.weights.get(i);
+    }
 
   /**
    *  Indicates whether the query has a match.
@@ -18,7 +28,9 @@ public class QrySopWAnd extends QrySop {
       if(r instanceof RetrievalModelIndri)
           return this.docIteratorHasMatchMin(r);
       else
-          return this.docIteratorHasMatchAll(r);
+          throw new IllegalArgumentException
+                  (r.getClass().getName() + " doesn't support the WAND operator.");
+//          return this.docIteratorHasMatchAll(r);
   }
 
   /**
@@ -28,20 +40,17 @@ public class QrySopWAnd extends QrySop {
    *  @throws IOException Error accessing the Lucene index
    */
   public double getScore(RetrievalModel r) throws IOException {
+//    if(r instanceof RetrievalModelUnrankedBoolean)
+//        return this.getScoreUnrankedBoolean(r);
+//
+//    else if(r instanceof RetrievalModelRankedBoolean)
+//        return this.getScoreRankedBoolean(r);
 
-    if(r instanceof RetrievalModelUnrankedBoolean) {
-        return this.getScoreUnrankedBoolean(r);
-    }
-    else if(r instanceof RetrievalModelRankedBoolean){
-        return this.getScoreRankedBoolean(r);
-    }
-    else if(r instanceof RetrievalModelIndri){
-        return this.getScoreIndri(r);
-    }
-    else{
-        throw new IllegalArgumentException
-        (r.getClass().getName() + " doesn't support the AND operator.");
-    }
+      if(r instanceof RetrievalModelIndri)
+          return this.getScoreIndri(r);
+      else
+          throw new IllegalArgumentException
+        (r.getClass().getName() + " doesn't support the WAND operator.");
   }
 
     /**
@@ -76,6 +85,7 @@ public class QrySopWAnd extends QrySop {
      *  @throws IOException Error accessing the Lucene index
      */
     private double getScoreIndri(RetrievalModel r) throws IOException{
+        initializeWeights();
         double score = 1.0;                      // Initialize the score
         int docid = this.docIteratorGetMatch();  // Current document id
 
@@ -85,54 +95,62 @@ public class QrySopWAnd extends QrySop {
        */
         for(int i = 0; i < this.args.size(); i++){
             QrySop q_i = (QrySop) this.args.get(i);
+
+            double exponent;
+            // exponent of current term under the WAND operator
+            if(!this.weights.isEmpty())
+                exponent = this.weights.get(i) / this.total_Weights;
+            else exponent = 1.0;
+
             if(q_i.docIteratorHasMatch(r) && q_i.docIteratorGetMatch() == docid)
-                score *= q_i.getScore(r);
+                score *= Math.pow(q_i.getScore(r), exponent);
             else
-                score *= q_i.getDefaultScore(r, docid);
+                score *= Math.pow(q_i.getDefaultScore(r, docid), exponent);
         }
 
-        // normalized by geometric mean of query size
-        score = Math.pow(score, 1.0 / this.args.size());
+        // normalized by geometric mean of query size (#AND operator)
+        if(this.weights.isEmpty())
+            score = Math.pow(score, 1.0 / this.args.size());
         return score;
     }
 
 
-    /**
-   *  getScore for the UnrankedBoolean retrieval model.
-   *  @param r The retrieval model that determines how scores are calculated.
-   *  @return The document score.
-   *  @throws IOException Error accessing the Lucene index
-   */
-  private double getScoreUnrankedBoolean (RetrievalModel r) throws IOException {
-      if(!this.docIteratorHasMatchCache())
-          return 0.0;
-      else
-          return 1.0;
-  }
-  
-  /**
-   *  getScore for the RankedBoolean retrieval model.
-   *  @param r The retrieval model that determines how scores are calculated.
-   *  @return The document score.
-   *  @throws IOException Error accessing the Lucene index
-   */
-  private double getScoreRankedBoolean(RetrievalModel r) throws IOException {
-	  if(this.docIteratorHasMatchCache()) {
-		  
-		  // Initialize the score as the maximal integer
-		  double score = Integer.MAX_VALUE;
-		 
-		  /* Return the maximum score of all query arguments
-		   * Note that AND uses docIteratorHasMatchAll where
-		   * docids are already matched, no need to check 
-		   */
-		  for(int i = 0; i < this.args.size(); i++){
-			  QrySop q_i = (QrySop) this.args.get(i);
-			  score = Math.min(score, q_i.getScore(r));
-		  }
-		  return score;
-	  }
-	  else
-		  return 0.0;
-  }
+//    /**
+//   *  getScore for the UnrankedBoolean retrieval model.
+//   *  @param r The retrieval model that determines how scores are calculated.
+//   *  @return The document score.
+//   *  @throws IOException Error accessing the Lucene index
+//   */
+//  private double getScoreUnrankedBoolean (RetrievalModel r) throws IOException {
+//      if(!this.docIteratorHasMatchCache())
+//          return 0.0;
+//      else
+//          return 1.0;
+//  }
+//
+//  /**
+//   *  getScore for the RankedBoolean retrieval model.
+//   *  @param r The retrieval model that determines how scores are calculated.
+//   *  @return The document score.
+//   *  @throws IOException Error accessing the Lucene index
+//   */
+//  private double getScoreRankedBoolean(RetrievalModel r) throws IOException {
+//	  if(this.docIteratorHasMatchCache()) {
+//
+//		  // Initialize the score as the maximal integer
+//		  double score = Integer.MAX_VALUE;
+//
+//		  /* Return the maximum score of all query arguments
+//		   * Note that AND uses docIteratorHasMatchAll where
+//		   * docids are already matched, no need to check
+//		   */
+//		  for(int i = 0; i < this.args.size(); i++){
+//			  QrySop q_i = (QrySop) this.args.get(i);
+//			  score = Math.min(score, q_i.getScore(r));
+//		  }
+//		  return score;
+//	  }
+//	  else
+//		  return 0.0;
+//  }
 }

@@ -1,0 +1,1 @@
+26:#WAND( 0.5 lower 0.3 heart 0.2 rate )

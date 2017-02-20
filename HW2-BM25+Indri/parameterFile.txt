@@ -1,4 +1,4 @@
-queryFilePath=queries.txt
+queryFilePath=queriesTest.txt
 indexPath=index
 trecEvalOutputPath=indri.teIn
 retrievalAlgorithm=indri
