@@ -1,4 +1,4 @@
-/** 
+/**
  *  Copyright(c) 2017, Carnegie Mellon University.  All Rights Reserved.
  */
 import java.io.*;
@@ -21,7 +21,7 @@ import java.util.*;
  *  <pre>
  *    RetrievalModel r = new RetrievalModelUnrankedBoolean();
  *    q.initialize(r);
- * 
+ *
  *    while(q.docIteratorHasMatch(r)) {
  *      int docid = q.docIteratorGetMatch();
  *      double score =((QrySop) q).getScore(model);
@@ -31,7 +31,7 @@ import java.util.*;
  *  </pre>
  *  <p>
  *  The Qry class defines the iteration interface and provides general
- *  methods that each subclass may override or use.  Note that the 
+ *  methods that each subclass may override or use.  Note that the
  *  iteration interface <i>does not</i> conform to the standard Java
  *  iteration interface.  It has different characteristics and capabilities.
  *  For example, getting the current element <i>does not</i> consume the
@@ -42,7 +42,7 @@ import java.util.*;
  *  The Qry class has two subclasses.  QrySop("score operators") contains
  *  query operators that compute document scores(e.g., AND, OR, SCORE).
  *  QryIop("inverted list operators") contains query operators that
- *  produce inverted lists(e.g., SYN, NEAR, TERM).  
+ *  produce inverted lists(e.g., SYN, NEAR, TERM).
  *  </p><p>
  *  The docIterator for query operators in the QrySop hierarchy iterates
  *  over a virtual list.  The next document id is determined dynamically
@@ -96,14 +96,14 @@ public abstract class Qry {
    *  docIteratorGetMatch and getScore don't have to recompute it.
    */
   private int docIteratorMatchCache = Qry.INVALID_DOCID;
-  
+
   private boolean matchStored = false;	// Operators can cache matches
   private int matchingDocid;
 
   //  --------------- Methods ---------------------------------------
 
   /**
-   *  Append an argument to the list of query operator arguments.  
+   *  Append an argument to the list of query operator arguments.
    *  @param q The query argument(query operator) to append.
    *  @throws IllegalArgumentException q is an invalid argument
    */
@@ -116,28 +116,29 @@ public abstract class Qry {
     //  arguments, and propagates field information from QryIop
     //  children to parents. Basically, it creates a well-formed
     //  query tree.
-    
+
     if(this instanceof QryIopTerm) {
       throw new IllegalArgumentException
        ("The TERM operator has no arguments.");
     }
 
     //  SCORE operators can have only a single argument of type QryIop.
-    
+
     if(this instanceof QrySopScore) {
       if(this.args.size() > 0) {
         throw new IllegalArgumentException
          ("Score operators can have only one argument");
-      } 
+      }
       else if(!(q instanceof QryIop)) {
         throw new IllegalArgumentException
          ("The argument to a SCORE operator must be of type QryIop.");
-      } 
+      }
       else {
-    	  	if((q instanceof QryIopNear) && q.args.size() < 2){
-    	  		throw new IllegalArgumentException
-    	  		("NEAR operators must have at least two arguments");
-    	  	}
+          /* points were deducted from HW1 because of this exception of #NEAR */
+            // q instanceof QryIopNear) && q.args.size() < 2){
+            // ow new IllegalArgumentException
+            // EAR operators must have at least two arguments");
+            //
         this.args.add(q);
         return;
       }
@@ -155,12 +156,12 @@ public abstract class Qry {
     }
 
     //  QryIop operators must have QryIop arguments in the same field.
-    
+
     if((this instanceof QryIop) &&(q instanceof QryIop)) {
-      
+
       if(this.args.size() == 0) {
     	  	((QryIop) this).field = new String(((QryIop) q).getField());
-      } 
+      }
       else {
         if(!((QryIop) this).field.equals(((QryIop) q).getField())) {
         		throw new IllegalArgumentException
@@ -181,7 +182,7 @@ public abstract class Qry {
     }
 
     throw new IllegalArgumentException
-     ("Objects of type " + 
+     ("Objects of type " +
        q.getClass().getName() +
        " cannot be an argument to a query operator of type " +
        this.getClass().getName());
@@ -207,11 +208,11 @@ public abstract class Qry {
    *  @param docid An internal document id.
    */
   public void docIteratorAdvanceTo(int docid) {
-    
+
     for(Qry q_i: this.args) {
         q_i.docIteratorAdvanceTo(docid);
     }
-    
+
     this.docIteratorClearMatchCache();
   }
 
@@ -248,7 +249,7 @@ public abstract class Qry {
   /**
    *  An instantiation of docIteratorHasMatch that is true if the
    *  query has a document that matches all query arguments; some
-   *  subclasses may choose to use this implementation.  
+   *  subclasses may choose to use this implementation.
    *  @param r The retrieval model that determines what is a match
    *  @return True if the query matches, otherwise false.
    */
@@ -261,31 +262,31 @@ public abstract class Qry {
 
     		// Get the docid of the first query argument.
     		Qry q_0 = this.args.get(0);
-	
+
     		if(!q_0.docIteratorHasMatch(r)) {
     			return false;
     		}
-	
+
     		int docid_0 = q_0.docIteratorGetMatch();
 
     		// Other query arguments must match the docid of the first query argument.
     		matchFound = true;
-	
+
     		for(int i = 1; i < this.args.size(); i++) {
     			Qry q_i = this.args.get(i);
-	
+
     			q_i.docIteratorAdvanceTo(docid_0);
-	
+
     			if(!q_i.docIteratorHasMatch(r)) 		// If any argument is exhausted
     				return false;					// there are no more matches.
-	
+
     			int docid_i = q_i.docIteratorGetMatch();
-	
+
     			if(docid_0 != docid_i) {		// docid_0 can't match. Try again.
     				q_0.docIteratorAdvanceTo(docid_i);
     				matchFound = false;
     				break;
-}			
+}
     		}
 
     		if(matchFound) {
@@ -310,7 +311,7 @@ public abstract class Qry {
         int docid = q_0.docIteratorGetMatch();
         this.docIteratorSetMatchCache(docid);
         return true;
-    } 
+    }
     else
         return false;
   }
@@ -341,8 +342,8 @@ public abstract class Qry {
     if(minDocid != Qry.INVALID_DOCID) {
         docIteratorSetMatchCache(minDocid);
         return true;
-    } 
-    else 
+    }
+    else
         return false;
   }
 
@@ -374,7 +375,7 @@ public abstract class Qry {
 
   /**
    *  Every operator has a display name that can be used by
-   *  toString for debugging or other user feedback.  
+   *  toString for debugging or other user feedback.
    *  @return The query operator's display name
    */
   public String getDisplayName() {
@@ -400,7 +401,7 @@ public abstract class Qry {
 
   /**
    *  Every operator must have a display name that can be used by
-   *  toString for debugging or other user feedback.  
+   *  toString for debugging or other user feedback.
    *  @param name The query operator's display name
    */
   public void setDisplayName(String name) {
@@ -419,7 +420,7 @@ public abstract class Qry {
 
     for(int i = 0; i < this.args.size(); i++)
     		result += this.args.get(i) + " ";
-    
+
     return(this.displayName + "( " + result + ")");
   }
 
