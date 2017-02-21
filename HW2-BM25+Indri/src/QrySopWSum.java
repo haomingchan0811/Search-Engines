@@ -102,7 +102,6 @@ public class QrySopWSum extends QrySop {
 
             // weight of current term under the WSUM operator
             double weight = this.weights.get(i) / this.total_Weights;
-
             if(q_i.docIteratorHasMatch(r) && q_i.docIteratorGetMatch() == docid)
                 score += weight * q_i.getScore(r);
             else

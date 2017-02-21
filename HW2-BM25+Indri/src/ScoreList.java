@@ -87,11 +87,11 @@ public class ScoreList {
 
     @Override
     public int compare(ScoreListEntry s1, ScoreListEntry s2) {
-	    	if(s1.score > s2.score) 
-	    		return -1;
-	    	else if(s1.score < s2.score)
-	    		return 1;
-	    	return s1.externalId.compareTo(s2.externalId);
+        if(s1.score > s2.score)
+            return -1;
+        else if(s1.score < s2.score)
+            return 1;
+        return s1.externalId.compareTo(s2.externalId);
     }
   }
 
