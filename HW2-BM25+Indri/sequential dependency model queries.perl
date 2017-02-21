@@ -38,8 +38,8 @@
 #
 
 # example usage
-print formulate_query( "white house rose garden", "sd", 0.5, 0.25, 0.25 ) . "\n\n";
-print formulate_query( "white house rose garden", "fd", 0.8, 0.1, 0.1 ) . "\n\n";
+print formulate_query("designer dogs", "sd", 0.5, 0.5, 0.5 ) . "\n\n";
+# print formulate_query( "white house rose garden", "fd", 0.8, 0.1, 0.1 ) . "\n\n";
 
 #
 # formulates a query based on query text and feature weights
@@ -56,11 +56,11 @@ sub formulate_query {
 
     # trim whitespace from beginning and end of query string
     $q =~ s/^\s+|\s+$//g;
-    
+
     my $queryT = "#and( ";
     my $queryO = "#and(";
     my $queryU = "#and(";
-    
+
     # generate term features (f_T)
     my @terms = split(/\s+/ , $q);
     my $term;
@@ -69,13 +69,13 @@ sub formulate_query {
     }
 
     my $num_terms = @terms;
-    
+
     # skip the rest of the processing if we're just
     # interested in term features or if we only have 1 term
     if( ( $wt[1] == 0.0 && $wt[2] == 0.0 ) || $num_terms == 1 ) {
 	return $queryT . ")";
     }
-    
+
     # generate the rest of the features
     my $start = 1;
     if( $type eq "sd" ) { $start = 3; }
@@ -92,7 +92,7 @@ sub formulate_query {
 		$num_extracted++;
 	    }
 	}
-	
+
 	if( $num_extracted == 1 ) { next; } # skip these, since we already took care of the term features...
 	if( $bin =~ /^0+11+[^1]*$/ ) { # words in contiguous phrase, ordered features (f_O)
 	    $queryO .= " #near/1( $extracted_terms) ";
@@ -107,6 +107,6 @@ sub formulate_query {
     if( $wt[2] != 0.0 && $queryU ne "#and(" ) { $query .= " $wt[2] $queryU)"; }
 
     if( $query eq "#wand(" ) { return ""; } # return "" if we couldn't formulate anything
-    
+
     return $query . " )";
 }

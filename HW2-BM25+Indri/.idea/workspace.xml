@@ -2,12 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="1b153776-ec61-42a1-9ef4-4891eb661ba7" name="Default" comment="">
-      <change type="DELETED" beforePath="$PROJECT_DIR$/queriesTest.txt" afterPath="" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/parameterFile.txt" afterPath="$PROJECT_DIR$/parameterFile.txt" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/queries.txt" afterPath="$PROJECT_DIR$/queries.txt" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/QrySopWSum.java" afterPath="$PROJECT_DIR$/src/QrySopWSum.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/ScoreList.java" afterPath="$PROJECT_DIR$/src/ScoreList.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/sequential dependency model queries.perl" afterPath="$PROJECT_DIR$/sequential dependency model queries.perl" />
     </list>
     <ignored path="$PROJECT_DIR$/out/" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -88,8 +84,8 @@
       <file leaf-file-name="ScoreList.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/ScoreList.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="313">
-              <caret line="108" column="33" lean-forward="true" selection-start-line="108" selection-start-column="33" selection-end-line="108" selection-end-column="33" />
+            <state relative-caret-position="7">
+              <caret line="90" column="22" lean-forward="true" selection-start-line="90" selection-start-column="22" selection-end-line="90" selection-end-column="22" />
               <folding>
                 <element signature="e#2486#2487#0" expanded="true" />
                 <element signature="e#2551#2552#0" expanded="true" />
@@ -1091,8 +1087,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/ScoreList.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="313">
-          <caret line="108" column="33" lean-forward="true" selection-start-line="108" selection-start-column="33" selection-end-line="108" selection-end-column="33" />
+        <state relative-caret-position="7">
+          <caret line="90" column="22" lean-forward="true" selection-start-line="90" selection-start-column="22" selection-end-line="90" selection-end-column="22" />
           <folding>
             <element signature="e#2486#2487#0" expanded="true" />
             <element signature="e#2551#2552#0" expanded="true" />
