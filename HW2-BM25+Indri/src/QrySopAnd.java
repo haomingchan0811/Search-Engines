@@ -85,6 +85,7 @@ public class QrySopAnd extends QrySop {
        */
         for(int i = 0; i < this.args.size(); i++){
             QrySop q_i = (QrySop) this.args.get(i);
+
             if(q_i.docIteratorHasMatch(r) && q_i.docIteratorGetMatch() == docid)
                 score *= q_i.getScore(r);
             else

@@ -18,7 +18,7 @@ public class QrySopWAnd extends QrySop {
      *  Compute the total weights for the WSUM operator.
      */
     public void initializeWeights(){
-        this.total_Weights = 0;
+        this.total_Weights = 0.0;
         for(int i = 0; i < this.weights.size(); i++)
             this.total_Weights += this.weights.get(i);
     }
@@ -65,6 +65,7 @@ public class QrySopWAnd extends QrySop {
      *  @throws IOException Error accessing the Lucene index
      */
     public double getDefaultScore(RetrievalModel r, int docid) throws IOException{
+        initializeWeights();                     // BUG!!: forget to initialize weights
         double score = 1.0;                      // Initialize the score
 
       /* Return the multiplication of scores of all query arguments.

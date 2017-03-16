@@ -18,7 +18,7 @@ public class QrySopWSum extends QrySop {
      *  Compute the total weights for the WSUM operator.
      */
     public void initializeWeights(){
-        this.total_Weights = 0;
+        this.total_Weights = 0.0;
         for(int i = 0; i < this.weights.size(); i++)
             this.total_Weights += this.weights.get(i);
     }
@@ -64,7 +64,8 @@ public class QrySopWSum extends QrySop {
      *  @throws IOException Error accessing the Lucene index
      */
     public double getDefaultScore(RetrievalModel r, int docid) throws IOException{
-        double score = 0;                      // Initialize the score
+        initializeWeights();                     // BUG!!: forget to initialize weights
+        double score = 0.0;                      // Initialize the score
 
       /* Return the weighted sum of scores of all query arguments.
        * Note that AND in Indri is different from AND in Boolean, it uses
@@ -75,7 +76,6 @@ public class QrySopWSum extends QrySop {
 
             // weight of current term under the WSUM operator
             double weight = this.weights.get(i) / this.total_Weights;
-
             score += weight * q_i.getDefaultScore(r, docid);
         }
         return score;
@@ -97,12 +97,13 @@ public class QrySopWSum extends QrySop {
        * Note that AND in Indri is different from AND in Boolean, it uses
        * docIteratorHasMatchMin, so we need to check whether docid matches.
        */
-        for(int i = 0; i < this.args.size(); i++){
+        for(int i = 0; i < this.args.size(); i++) {
             QrySop q_i = (QrySop) this.args.get(i);
 
             // weight of current term under the WSUM operator
             double weight = this.weights.get(i) / this.total_Weights;
-            if(q_i.docIteratorHasMatch(r) && q_i.docIteratorGetMatch() == docid)
+
+            if (q_i.docIteratorHasMatch(r) && q_i.docIteratorGetMatch() == docid)
                 score += weight * q_i.getScore(r);
             else
                 score += weight * q_i.getDefaultScore(r, docid);
