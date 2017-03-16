@@ -1,0 +1,9 @@
+queryFilePath=queries.txt
+indexPath=index
+trecEvalOutputPath=Indri.teIn
+retrievalAlgorithm=indri
+BM25:k_1=1.2
+BM25:b=0.75
+BM25:k_3=0.0
+Indri:mu=2500
+Indri:lambda=0.4
