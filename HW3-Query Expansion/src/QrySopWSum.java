@@ -29,7 +29,7 @@ public class QrySopWSum extends QrySop {
    *  @return True if the query matches, otherwise false.
    */
   public boolean docIteratorHasMatch(RetrievalModel r) {
-      if(r instanceof RetrievalModelIndri)
+      if(r instanceof RetrievalModelIndri || r instanceof RetrievalModelIndriExpansion)
           return this.docIteratorHasMatchMin(r);
       else
           throw new IllegalArgumentException
@@ -49,7 +49,7 @@ public class QrySopWSum extends QrySop {
 //    else if(r instanceof RetrievalModelRankedBoolean)
 //        return this.getScoreRankedBoolean(r);
 
-        if(r instanceof RetrievalModelIndri)
+        if(r instanceof RetrievalModelIndri || r instanceof RetrievalModelIndriExpansion)
             return this.getScoreIndri(r);
         else
             throw new IllegalArgumentException

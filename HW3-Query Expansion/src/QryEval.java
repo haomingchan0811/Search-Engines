@@ -102,7 +102,7 @@ public class QryEval {
             model.setParameters(parameters);
             break;
         case "indri":
-            if(!parameters.containsKey("fb") || (parameters.containsKey("fb") && parameters.get("fb") == "false")){
+            if(!parameters.containsKey("fb") || (parameters.containsKey("fb") && parameters.get("fb").equals("false"))){
                 model = new RetrievalModelIndri();
                 model.setParameters(parameters);
             }
@@ -154,32 +154,37 @@ public class QryEval {
    * @throws IOException Error accessing the index
    */
   static ScoreList processQuery(String qString, RetrievalModel model) throws IOException {
-	  
-    String defaultOp = model.defaultQrySopName();
-    qString = defaultOp + "(" + qString + ")";
-    Qry q = QryParser.getQuery(qString);
+
+      String defaultOp = model.defaultQrySopName();
+      qString = defaultOp + "(" + qString + ")";
+      Qry q = QryParser.getQuery(qString);
 
 //    // Show the query that is evaluated
 //    System.out.println("    --> " + q);
-    
-    if(q != null) {
-        ScoreList r = new ScoreList();
-      
-        if(q.args.size() > 0) {		// Ignore empty queries
-            q.initialize(model);
 
-            while(q.docIteratorHasMatch(model)) {
-                int docid = q.docIteratorGetMatch();
-                double score = ((QrySop) q).getScore(model);
+      if (q != null) {
+          ScoreList r = new ScoreList();
+
+          if (q.args.size() > 0) {        // Ignore empty queries
+
+              if (model instanceof RetrievalModelIndriExpansion) {
+                  QryExpansion QryExp = new QryExpansion();
+                  return QryExp.getScoreList(q);
+              }
+
+              q.initialize(model);
+
+              while (q.docIteratorHasMatch(model)) {
+                  int docid = q.docIteratorGetMatch();
+                  double score = ((QrySop) q).getScore(model);
 //                System.out.println(docid + ": " + score);
-                r.add(docid, score);
-                q.docIteratorAdvancePast(docid);
-            }
-        }
-        return r;
-    } 
-    else 
-    	return null;
+                  r.add(docid, score);
+                  q.docIteratorAdvancePast(docid);
+              }
+          }
+          return r;
+      } else
+          return null;
   }
 
   /**

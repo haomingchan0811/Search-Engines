@@ -2,27 +2,22 @@
  *  Copyright(c) 2017, Carnegie Mellon University.  All Rights Reserved.
  */
 
-import java.io.*;
-import java.lang.IllegalArgumentException;
+import java.io.IOException;
 
 /**
- *  The SCORE operator for all retrieval models.
+ *  The query expansion process for Indri retrieval model.
  */
-public class QrySopScore extends QrySop{
+public class QryExpansion {
 
-    /**
-     *  Document-independent values that should be determined just once.
-     *  Some retrieval models have these, some don't.
-     */
-  
-  /**
-   *  Indicates whether the query has a match.
-   *  @param r The retrieval model that determines what is a match
-   *  @return True if the query matches, otherwise false.
-   */
   public boolean docIteratorHasMatch(RetrievalModel r){
 	  return this.docIteratorHasMatchFirst(r);
   }
+
+
+  public ScoreList getScoreList(Qry query){
+
+  }
+
 
   /**
    *  Get a score for the document that docIteratorHasMatch matched.

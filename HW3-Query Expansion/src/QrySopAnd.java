@@ -15,7 +15,7 @@ public class QrySopAnd extends QrySop {
    *  @return True if the query matches, otherwise false.
    */
   public boolean docIteratorHasMatch(RetrievalModel r) {
-      if(r instanceof RetrievalModelIndri)
+      if(r instanceof RetrievalModelIndri || r instanceof RetrievalModelIndriExpansion)
           return this.docIteratorHasMatchMin(r);
       else
           return this.docIteratorHasMatchAll(r);
@@ -35,7 +35,7 @@ public class QrySopAnd extends QrySop {
     else if(r instanceof RetrievalModelRankedBoolean){
         return this.getScoreRankedBoolean(r);
     }
-    else if(r instanceof RetrievalModelIndri){
+    else if(r instanceof RetrievalModelIndri || r instanceof RetrievalModelIndriExpansion){
         return this.getScoreIndri(r);
     }
     else{

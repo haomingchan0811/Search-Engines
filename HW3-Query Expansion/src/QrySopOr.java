@@ -32,7 +32,7 @@ public class QrySopOr extends QrySop {
   			return this.getScoreUnrankedBoolean(r);
   		else if(r instanceof RetrievalModelRankedBoolean)
   			return this.getScoreRankedBoolean(r);
-  		else if(r instanceof RetrievalModelIndri)
+  		else if(r instanceof RetrievalModelIndri || r instanceof RetrievalModelIndriExpansion)
   		    return this.getScoreIndri(r);
   		else{
   			throw new IllegalArgumentException
