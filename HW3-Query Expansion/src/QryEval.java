@@ -102,14 +102,8 @@ public class QryEval {
             model.setParameters(parameters);
             break;
         case "indri":
-            if(!parameters.containsKey("fb") || (parameters.containsKey("fb") && parameters.get("fb").equals("false"))){
-                model = new RetrievalModelIndri();
-                model.setParameters(parameters);
-            }
-            else {
-                model = new RetrievalModelIndriExpansion();
-                model.setParameters(parameters);
-            }
+            model = new RetrievalModelIndri();
+            model.setParameters(parameters);
             break;
         default:
             throw new IllegalArgumentException
@@ -167,9 +161,13 @@ public class QryEval {
 
           if (q.args.size() > 0) {        // Ignore empty queries
 
-              if (model instanceof RetrievalModelIndriExpansion) {
-                  QryExpansion QryExp = new QryExpansion();
-                  return QryExp.getScoreList(q);
+              if (model instanceof RetrievalModelIndri) {
+                  RetrievalModelIndri Indri = (RetrievalModelIndri) model;
+                  String fb = Indri.getFilePath("fb");
+                  if(fb.equals("true")) {
+                      QryExpansion QryExp = new QryExpansion();
+                      return QryExp.getScoreList(q, Indri);
+                  }
               }
 
               q.initialize(model);

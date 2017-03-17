@@ -51,7 +51,7 @@ public class RetrievalModelIndriExpansion extends RetrievalModel {
         if(fbMu < 0) throw new IllegalArgumentException
                 ("Illegal argument: " + param.get("fbMu") + ", fbMu is an integer >= 0");
 
-        fbOrigWeight = Integer.parseInt(param.get("fbOrigWeight"));
+        fbOrigWeight = Double.parseDouble(param.get("fbOrigWeight"));
         if(fbOrigWeight < 0) throw new IllegalArgumentException
                 ("Illegal argument: " + param.get("fbOrigWeight") + ", fbOrigWeight is a real number between 0.0 and 1.0");
 
@@ -59,7 +59,7 @@ public class RetrievalModelIndriExpansion extends RetrievalModel {
             fbInitialRankingFile = param.get("fbInitialRankingFile");
 
         if(param.containsKey("fbExpansionQueryFile") && param.get("fbExpansionQueryFile") != "")
-            fbInitialRankingFile = param.get("fbExpansionQueryFile");
+            fbExpansionQueryFile = param.get("fbExpansionQueryFile");
     }
 
     // Fetch value of the parameter
