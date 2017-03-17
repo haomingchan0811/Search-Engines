@@ -113,6 +113,10 @@ public class RetrievalModelIndri extends RetrievalModel {
         }
     }
 
+    // Fetch the initial ranking of a specific query
+    public ScoreList getInitialRanking(int qid) {
+        return initialRanking.get(qid);
+    }
 
     /**
      *  Read the specified ranking file.

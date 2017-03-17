@@ -147,7 +147,7 @@ public class QryEval {
    * @return Search results
    * @throws IOException Error accessing the index
    */
-  static ScoreList processQuery(String qString, RetrievalModel model) throws IOException {
+  static ScoreList processQuery(int qid, String qString, RetrievalModel model) throws IOException {
 
       String defaultOp = model.defaultQrySopName();
       qString = defaultOp + "(" + qString + ")";
@@ -166,7 +166,7 @@ public class QryEval {
                   String fb = Indri.getFilePath("fb");
                   if(fb.equals("true")) {
                       QryExpansion QryExp = new QryExpansion();
-                      return QryExp.getScoreList(q, Indri);
+                      return QryExp.getScoreList(qid, q, Indri);
                   }
               }
 
@@ -216,7 +216,7 @@ public class QryEval {
 //        System.out.println("Query " + qLine);
         ScoreList r = null;
 
-        r = processQuery(query, model);
+        r = processQuery(Integer.parseInt(qid), query, model);
         r.sort();
 
         if(r != null) {
