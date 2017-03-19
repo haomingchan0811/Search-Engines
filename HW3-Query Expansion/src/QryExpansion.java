@@ -109,7 +109,6 @@ public class QryExpansion {
       // rewrite the query by combining the expanded query with the original one
       double originWeight = model.getParam("fbOrigWeight");
       String expandedQuery = String.format("#wand(%f %s %f %s)", originWeight, originalQuery, 1 - originWeight, learnedQuery);
-      // System.out.println(expandedQuery);
 
       // run the expanded query to retrieve documents
       r = processQuery(expandedQuery, this.model);
