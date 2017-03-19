@@ -12,5 +12,4 @@ fbDocs=5
 fbTerms=10
 fbMu=1000
 fbOrigWeight=0.5
-fbInitialRankingFile=Indri-Bow.teIn
 fbExpansionQueryFile=queryExpansion.txt

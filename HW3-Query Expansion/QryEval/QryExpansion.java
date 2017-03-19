@@ -62,7 +62,6 @@ public class QryExpansion {
       /* extract all candidate terms */
       double fbDocs = model.getParam("fbDocs");
       double fbTerms = model.getParam("fbTerms");
-
       Set<String> candidates = findCandidates(fbDocs, r);
 
       // Compute score for each candidate term
@@ -71,7 +70,7 @@ public class QryExpansion {
       for(String term: candidates) {
           double termScore = computeScore(term, fbDocs, r, model);
           pq.add(new Entry(term, termScore));
-          System.out.println(String.format("Term %d out of %d", i++, size));
+//          System.out.println(String.format("Term %d out of %d", i++, size));
           if(pq.size() > fbTerms) pq.poll();
       }
 
@@ -127,7 +126,7 @@ public class QryExpansion {
             TermVector vec = new TermVector(docid, "body");
             int numTerms = vec.stemsLength();
 
-            for (int k = 1; k < numTerms; k++) {
+            for (int k = 0; k < numTerms; k++) {
                 String term = vec.stemString(k);
                 if (!term.contains("."))   // terms having "." may confuse the parser
                     candidates.add(term);
