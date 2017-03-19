@@ -126,7 +126,7 @@ public class QryExpansion {
             TermVector vec = new TermVector(docid, "body");
             int numTerms = vec.stemsLength();
 
-            for (int k = 0; k < numTerms; k++) {
+            for (int k = 1; k < numTerms; k++) {
                 String term = vec.stemString(k);
                 if (!term.contains("."))   // terms having "." may confuse the parser
                     candidates.add(term);
