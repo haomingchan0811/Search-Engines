@@ -84,11 +84,11 @@ public class QryExpansion {
       // Compute score for each candidate term
       PriorityQueue<Entry> pq = new PriorityQueue<>(new EntryComparator());
 
-      int i = 0, size = candidates.size();
+//      int i = 0, size = candidates.size();
       for(String term: candidates) {
           double termScore = computeScore(term, r);
           pq.add(new Entry(term, termScore));
-          System.out.println(String.format("Term %d out of %d", i++, size));
+//          System.out.println(String.format("Term %d out of %d", i++, size));
           if(pq.size() > this.fbTerms) pq.poll();
       }
 

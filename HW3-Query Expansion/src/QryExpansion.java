@@ -84,11 +84,11 @@ public class QryExpansion {
       // Compute score for each candidate term
       PriorityQueue<Entry> pq = new PriorityQueue<>(new EntryComparator());
 
-      int i = 0, size = candidates.size();
+//      int i = 0, size = candidates.size();
       for(String term: candidates) {
           double termScore = computeScore(term, r);
           pq.add(new Entry(term, termScore));
-          System.out.println(String.format("Term %d out of %d", i++, size));
+//          System.out.println(String.format("Term %d out of %d", i++, size));
           if(pq.size() > this.fbTerms) pq.poll();
       }
 
@@ -107,12 +107,12 @@ public class QryExpansion {
 
 
       // rewrite the query by combining the expanded query with the original one
-      double orginWeight = model.getParam("fbOrigWeight");
-      String expandedQuery = String.format("#wand(%f %s %f %s)", orginWeight, originalQuery, 1 - orginWeight, learnedQuery);
+      double originWeight = model.getParam("fbOrigWeight");
+      String expandedQuery = String.format("#wand(%f %s %f %s)", originWeight, originalQuery, 1 - originWeight, learnedQuery);
       // System.out.println(expandedQuery);
 
       // run the expanded query to retrieve documents
-      r = processQuery(expandedQuery, model);
+      r = processQuery(expandedQuery, this.model);
 
       return r;
   }
