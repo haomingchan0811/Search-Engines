@@ -1,1 +1,0 @@
-10: #wand( 0.013576 package 0.014588 provider 0.014937 service 0.015248 fast 0.017064 dial 0.029849 domain 0.054087 web 0.081669 host 0.090191 internet 0.153549 cheap)

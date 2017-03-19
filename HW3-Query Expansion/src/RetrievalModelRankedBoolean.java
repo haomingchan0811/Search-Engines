@@ -11,8 +11,13 @@ import java.util.Map;
  */
 public class RetrievalModelRankedBoolean extends RetrievalModel {
 
+//	public String defaultQrySopName() {
+//		return new String("#or");
+//	}
+
+	// change of default operator for HW3-query expansion as a baseline for comparison
 	public String defaultQrySopName() {
-		return new String("#or");
+		return new String("#and");
 	}
 
 	public void setParameters(Map<String, String> param){ return;}

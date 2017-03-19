@@ -1,7 +1,7 @@
 queryFilePath=queries.txt
 indexPath=index
-trecEvalOutputPath=Indri.teIn
-retrievalAlgorithm=indri
+trecEvalOutputPath=ranked.teIn
+retrievalAlgorithm=rankedboolean
 Indri:mu=1000
 Indri:lambda=0.7
 fb=true
