@@ -13,6 +13,11 @@ import java.util.*;
  */
 public class QryExpansion {
 
+    private double fbMu, lenCorpus, fbDocs, fbTerms;
+    private String field;
+    private int qid;
+    private RetrievalModelIndri model;
+
     // A utility class to create a <term, score> object.
     private class Entry {
         private String key;
@@ -41,12 +46,26 @@ public class QryExpansion {
         }
     }
 
+
+    public void initialize(RetrievalModelIndri model, int qid) throws IOException{
+        this.model = model;
+        this.field = "body";
+        this.qid = qid;
+        this.fbMu = model.getParam("fbMu");
+        this.lenCorpus = Idx.getSumOfFieldLengths(this.field);
+        this.fbTerms = model.getParam("fbTerms");
+        this.fbDocs= model.getParam("fbDocs");
+    }
+
   public ScoreList getScoreList(int qid, Qry q, String originalQuery, RetrievalModelIndri model) throws IOException{
+
+      // initialize parameter
+      initialize(model, qid);
 
       ScoreList r = new ScoreList();
 
       if(!model.getFilePath("fbInitialRankingFile").equals(""))
-          r = model.getInitialRanking(qid);
+          r = model.getInitialRanking(this.qid);
       else{
           q.initialize(model);
 
@@ -60,18 +79,17 @@ public class QryExpansion {
       r.sort();
 
       /* extract all candidate terms */
-      double fbDocs = model.getParam("fbDocs");
-      double fbTerms = model.getParam("fbTerms");
-      Set<String> candidates = findCandidates(fbDocs, r);
+      Set<String> candidates = findCandidates(r);
 
       // Compute score for each candidate term
       PriorityQueue<Entry> pq = new PriorityQueue<>(new EntryComparator());
+
       int i = 0, size = candidates.size();
       for(String term: candidates) {
-          double termScore = computeScore(term, fbDocs, r, model);
+          double termScore = computeScore(term, r);
           pq.add(new Entry(term, termScore));
-//          System.out.println(String.format("Term %d out of %d", i++, size));
-          if(pq.size() > fbTerms) pq.poll();
+          System.out.println(String.format("Term %d out of %d", i++, size));
+          if(pq.size() > this.fbTerms) pq.poll();
       }
 
       // expand the query
@@ -85,7 +103,7 @@ public class QryExpansion {
       // write the expanded query to a file
       String outputPath = model.getFilePath("fbExpansionQueryFile");
       if(!outputPath.equals(""))
-          writeFile(qid, learnedQuery, outputPath);
+          writeFile(learnedQuery, outputPath);
 
 
       // rewrite the query by combining the expanded query with the original one
@@ -101,32 +119,30 @@ public class QryExpansion {
 
     /**
      * write the query to file along with its id.
-     * @param qid Id of a query.
      * @param s A string that contains a query.
      * @param path The path of the file to write.
      * @throws IOException Error accessing the index
      */
-    public void writeFile(int qid, String s, String path) throws IOException{
+    public void writeFile(String s, String path) throws IOException{
         PrintWriter writer = new PrintWriter(new FileWriter(path, true));
-        writer.println(String.format("%d: %s", qid, s));
+        writer.println(String.format("%d: %s", this.qid, s));
         writer.close();
     }
 
     /**
      * retrieve all the terms in the top K documents.
-     * @param fbDocs number of top documents (K).
      * @param r ScoreList of the top 100 documents.
      * @return A hashset containing all the candidate terms.
      * @throws IOException Error accessing the index
      */
-    public Set<String> findCandidates(double fbDocs, ScoreList r) throws IOException{
+    public Set<String> findCandidates(ScoreList r) throws IOException{
         Set<String> candidates = new HashSet<>();
-        for (int i = 0; i < fbDocs; i++) {
+        for (int i = 0; i < this.fbDocs; i++) {
             int docid = r.getDocid(i);
             TermVector vec = new TermVector(docid, "body");
             int numTerms = vec.stemsLength();
 
-            for (int k = 0; k < numTerms; k++) {
+            for (int k = 1; k < numTerms; k++) {
                 String term = vec.stemString(k);
                 if (!term.contains("."))   // terms having "." may confuse the parser
                     candidates.add(term);
@@ -167,38 +183,33 @@ public class QryExpansion {
         else return null;
     }
 
-  public double computeScore(String term, double fbDocs, ScoreList r, RetrievalModelIndri model) throws IOException{
+  public double computeScore(String term, ScoreList r) throws IOException{
       double score = 0.0;
-      double mu = model.getParam("fbMu");
-      String field = "body";
-      for(int i = 0; i < fbDocs; i++){
+
+      // a form of idf to penalize frequent terms
+      double ctf = Idx.getTotalTermFreq(this.field, term);
+      double p = ctf / this.lenCorpus;      // MLE of Prob(term in the collection)
+      double idf = Math.log(this.lenCorpus / ctf);
+
+
+      for(int i = 0; i < this.fbDocs; i++){
 
           // Indri score for the original query for this document
           int docid = r.getDocid(i);
           double docScore = r.getDocid(i);
+          TermVector vec = new TermVector(docid, this.field);
 
           // score for the candidate term conditioned on this document
-          double lenCorpus = Idx.getSumOfFieldLengths(field);
-          double ctf = Idx.getTotalTermFreq(field, term);
-          double p = ctf / lenCorpus;      // MLE of Prob(term in the collection)
+          int idx = vec.indexOfStem(term);   // index of the term in this document
+          double tf = (idx == -1? 0.0: vec.stemFreq(idx));
+          double docLen = Idx.getFieldLength(this.field, docid);
+          docScore *= (tf + this.fbMu * p) / (docLen + this.fbMu);
 
-          double tf = 0.0;
-          double docLen = Idx.getFieldLength(field, docid);
-          QryIopTerm IopTerm = new QryIopTerm(term, field);
-          IopTerm.initialize(model);
-          IopTerm.docIteratorAdvanceTo(docid);
-          if(IopTerm.docIteratorHasMatch(model) && IopTerm.docIteratorGetMatch() == docid)
-              tf = IopTerm.docIteratorGetMatchPosting().tf;
-
-          docScore *= (tf + mu * p) / (docLen + mu);
-
-          // a form of idf to penalize frequent terms
-          docScore *= Math.log(lenCorpus / ctf);
 //          System.out.println(String.format("score for %s in doc %d: %f", term, i, docScore));
 
           score += docScore;
       }
-      return score;
+      return score * idf;
   }
 
 //    /**

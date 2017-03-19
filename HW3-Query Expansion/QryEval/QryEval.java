@@ -163,8 +163,7 @@ public class QryEval {
 
               if (model instanceof RetrievalModelIndri) {
                   RetrievalModelIndri Indri = (RetrievalModelIndri) model;
-                  String fb = Indri.getFilePath("fb");
-                  if(fb.equals("true")) {
+                  if(Indri.getFilePath("fb").equals("true")) {
                       QryExpansion QryExp = new QryExpansion();
                       return QryExp.getScoreList(qid, q, qString, Indri);
                   }
