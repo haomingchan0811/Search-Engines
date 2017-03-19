@@ -17,6 +17,7 @@ public class QryExpansion {
     private String field;
     private int qid;
     private RetrievalModelIndri model;
+    private ScoreList r;
 
     // A utility class to create a <term, score> object.
     private class Entry {
@@ -62,11 +63,11 @@ public class QryExpansion {
       // initialize parameter
       initialize(model, qid);
 
-      ScoreList r = new ScoreList();
 
       if(!model.getFilePath("fbInitialRankingFile").equals(""))
-          r = model.getInitialRanking(this.qid);
+          this.r = model.getInitialRanking(this.qid);
       else{
+          this.r = new ScoreList();
           q.initialize(model);
 
           while (q.docIteratorHasMatch(model)) {
@@ -76,17 +77,17 @@ public class QryExpansion {
               q.docIteratorAdvancePast(docid);
           }
       }
-      r.sort();
+      this.r.sort();
 
       /* extract all candidate terms */
-      Set<String> candidates = findCandidates(r);
+      Set<String> candidates = findCandidates();
 
       // Compute score for each candidate term
       PriorityQueue<Entry> pq = new PriorityQueue<>(new EntryComparator());
 
 //      int i = 0, size = candidates.size();
       for(String term: candidates) {
-          double termScore = computeScore(term, r);
+          double termScore = computeScore(term);
           pq.add(new Entry(term, termScore));
 //          System.out.println(String.format("Term %d out of %d", i++, size));
           if(pq.size() > this.fbTerms) pq.poll();
@@ -111,9 +112,8 @@ public class QryExpansion {
       String expandedQuery = String.format("#wand(%f %s %f %s)", originWeight, originalQuery, 1 - originWeight, learnedQuery);
 
       // run the expanded query to retrieve documents
-      r = processQuery(expandedQuery, this.model);
-
-      return r;
+      // this.r = processQuery(expandedQuery);
+      return processQuery(expandedQuery);
   }
 
     /**
@@ -130,15 +130,13 @@ public class QryExpansion {
 
     /**
      * retrieve all the terms in the top K documents.
-     * @param r ScoreList of the top 100 documents.
-     * @return A hashset containing all the candidate terms.
+     * @return A set containing all the candidate terms.
      * @throws IOException Error accessing the index
      */
-    public Set<String> findCandidates(ScoreList r) throws IOException{
+    public Set<String> findCandidates() throws IOException{
         Set<String> candidates = new HashSet<>();
         for (int i = 0; i < this.fbDocs; i++) {
-            int docid = r.getDocid(i);
-            TermVector vec = new TermVector(docid, "body");
+            TermVector vec = new TermVector(this.r.getDocid(i), "body");
             int numTerms = vec.stemsLength();
 
             for (int k = 1; k < numTerms; k++) {
@@ -153,63 +151,67 @@ public class QryExpansion {
     /**
      * Process one query.
      * @param qString A string that contains a query.
-     * @param model The retrieval model determines how matching and scoring is done.
      * @return Search results
      * @throws IOException Error accessing the index
      */
-    static ScoreList processQuery(String qString, RetrievalModel model) throws IOException {
+    public ScoreList processQuery(String qString) throws IOException {
 
-        String defaultOp = model.defaultQrySopName();
+        String defaultOp = this.model.defaultQrySopName();
         qString = defaultOp + "(" + qString + ")";
         Qry q = QryParser.getQuery(qString);
 
         if (q != null) {
-            ScoreList r = new ScoreList();
+            ScoreList s = new ScoreList();
 
             if (q.args.size() > 0) {        // Ignore empty queries
 
-                q.initialize(model);
+                q.initialize(this.model);
 
-                while (q.docIteratorHasMatch(model)) {
+                while (q.docIteratorHasMatch(this.model)) {
                     int docid = q.docIteratorGetMatch();
-                    double score = ((QrySop) q).getScore(model);
-                    r.add(docid, score);
+                    double score = ((QrySop) q).getScore(this.model);
+                    s.add(docid, score);
                     q.docIteratorAdvancePast(docid);
                 }
             }
-            return r;
+            return s;
         }
         else return null;
     }
 
-  public double computeScore(String term, ScoreList r) throws IOException{
-      double score = 0.0;
+    /**
+     * compute the term score (with idf effect) of all top K documents.
+     * @param term target candidate term.
+     * @return the term score (with idf effect) of all top K documents.
+     * @throws IOException Error accessing the index
+     */
+    public double computeScore(String term) throws IOException{
+        double score = 0.0;
 
-      // a form of idf to penalize frequent terms
-      double ctf = Idx.getTotalTermFreq(this.field, term);
-      double p = ctf / this.lenCorpus;      // MLE of Prob(term in the collection)
-      double idf = Math.log(this.lenCorpus / ctf);
+        // a form of idf to penalize frequent terms
+        double ctf = Idx.getTotalTermFreq(this.field, term);
+        double p = ctf / this.lenCorpus;      // MLE of Prob(term in the collection)
+        double idf = Math.log(this.lenCorpus / ctf);
 
+        for(int i = 0; i < this.fbDocs; i++){
 
-      for(int i = 0; i < this.fbDocs; i++){
+            // Indri score for the original query for this document
+            int docid = this.r.getDocid(i);
+            double docScore = this.r.getDocidScore(i);
+            TermVector vec = new TermVector(docid, this.field);
 
-          // Indri score for the original query for this document
-          int docid = r.getDocid(i);
-          double docScore = r.getDocid(i);
-          TermVector vec = new TermVector(docid, this.field);
+            // score for the candidate term conditioned on this document
+            int idx = vec.indexOfStem(term);   // index of the term in this document
+            double tf = (idx == -1? 0.0: vec.stemFreq(idx));
+            double docLen = Idx.getFieldLength(this.field, docid);
+            docScore *= (tf + this.fbMu * p) / (docLen + this.fbMu);
+            //System.out.println(String.format("score for %s in doc %d: %f", term, i, docScore));
 
-          // score for the candidate term conditioned on this document
-          int idx = vec.indexOfStem(term);   // index of the term in this document
-          double tf = (idx == -1? 0.0: vec.stemFreq(idx));
-          double docLen = Idx.getFieldLength(this.field, docid);
-          docScore *= (tf + this.fbMu * p) / (docLen + this.fbMu);
+            score += docScore;
+        }
+        return score * idf;
+    }
 
-//          System.out.println(String.format("score for %s in doc %d: %f", term, i, docScore));
-
-          score += docScore;
-      }
-      return score * idf;
-  }
 
 //    /**
 //     *  Sort a HashMap by its value.
