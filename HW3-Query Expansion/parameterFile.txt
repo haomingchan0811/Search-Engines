@@ -1,12 +1,13 @@
 queryFilePath=queries.txt
 indexPath=index
-trecEvalOutputPath=term10.mu0.teIn
+trecEvalOutputPath=Sys-indri.teIn
 retrievalAlgorithm=indri
-Indri:mu=0
+Indri:mu=2500
 Indri:lambda=0.4
 fb=true
-fbDocs=40
+fbDocs=10
 fbTerms=10
 fbMu=0
-fbOrigWeight=0.0
+fbOrigWeight=0.5
 fbInitialRankingFile=Indri-Bow.teIn
+fbExpansionQueryFile=Sys-queryExpansion.txt
