@@ -20,7 +20,7 @@ public class RetrievalModelIndri extends RetrievalModel {
     private double mu, lambda, fbOrigWeight;
     private int fbDocs, fbTerms, fbMu;
     private String fb = "false", fbInitialRankingFile = "", fbExpansionQueryFile = "";
-    private Map<Integer, ScoreList> initialRanking;
+    private HashMap<Integer, ScoreList> initialRanking;
 
     public String defaultQrySopName() {
         return new String("#and");
@@ -35,37 +35,37 @@ public class RetrievalModelIndri extends RetrievalModel {
                     ("Required parameters for IndriExpansion model were missing from the parameter file.");
         }
 
-        mu = Double.parseDouble(param.get("Indri:mu"));
-        if(mu < 0) throw new IllegalArgumentException
+        this.mu = Double.parseDouble(param.get("Indri:mu"));
+        if(this.mu < 0) throw new IllegalArgumentException
                 ("Illegal argument: " + param.get("Indri:mu") + ", mu is a real number >= 0");
 
-        lambda = Double.parseDouble(param.get("Indri:lambda"));
-        if(lambda < 0) throw new IllegalArgumentException
+        this.lambda = Double.parseDouble(param.get("Indri:lambda"));
+        if(this.lambda < 0) throw new IllegalArgumentException
                 ("Illegal argument: " + param.get("Indri:lambda") + ", lambda is a real number between 0.0 and 1.0");
 
         if((param.containsKey("fb") && param.get("fb").equals("true"))) {
-            fb = "true";
+            this.fb = "true";
 
-            fbDocs = Integer.parseInt(param.get("fbDocs"));
-            if (fbDocs <= 0) throw new IllegalArgumentException
+            this.fbDocs = Integer.parseInt(param.get("fbDocs"));
+            if (this.fbDocs <= 0) throw new IllegalArgumentException
                     ("Illegal argument: " + param.get("fbDocs") + ", fbDocs is an integer > 0");
 
-            fbTerms = Integer.parseInt(param.get("fbTerms"));
-            if (fbTerms <= 0) throw new IllegalArgumentException
+            this.fbTerms = Integer.parseInt(param.get("fbTerms"));
+            if (this.fbTerms <= 0) throw new IllegalArgumentException
                     ("Illegal argument: " + param.get("fbTerms") + ", fbTerms is an integer > 0");
 
-            fbMu = Integer.parseInt(param.get("fbMu"));
-            if (fbMu < 0) throw new IllegalArgumentException
+            this.fbMu = Integer.parseInt(param.get("fbMu"));
+            if (this.fbMu < 0) throw new IllegalArgumentException
                     ("Illegal argument: " + param.get("fbMu") + ", fbMu is an integer >= 0");
 
-            fbOrigWeight = Double.parseDouble(param.get("fbOrigWeight"));
-            if (fbOrigWeight < 0) throw new IllegalArgumentException
+            this.fbOrigWeight = Double.parseDouble(param.get("fbOrigWeight"));
+            if (this.fbOrigWeight < 0) throw new IllegalArgumentException
                     ("Illegal argument: " + param.get("fbOrigWeight") + ", fbOrigWeight is a real number between 0.0 and 1.0");
 
             if (param.containsKey("fbInitialRankingFile") && param.get("fbInitialRankingFile") != "") {
-                fbInitialRankingFile = param.get("fbInitialRankingFile");
+                this.fbInitialRankingFile = param.get("fbInitialRankingFile");
                 try{
-                    initialRanking = readRanking(fbInitialRankingFile);
+                    this.initialRanking = readRanking();
                 }
                 catch (Exception e){
                     e.printStackTrace();
@@ -73,7 +73,7 @@ public class RetrievalModelIndri extends RetrievalModel {
             }
 
             if (param.containsKey("fbExpansionQueryFile") && param.get("fbExpansionQueryFile") != "")
-                fbExpansionQueryFile = param.get("fbExpansionQueryFile");
+                this.fbExpansionQueryFile = param.get("fbExpansionQueryFile");
         }
     }
 
@@ -115,22 +115,22 @@ public class RetrievalModelIndri extends RetrievalModel {
 
     // Fetch the initial ranking of a specific query
     public ScoreList getInitialRanking(int qid) {
-        return initialRanking.get(qid);
+        return this.initialRanking.get(qid);
     }
 
     /**
      *  Read the specified ranking file.
      *  @return The candidate query terms.
      */
-    private static Map<Integer, ScoreList> readRanking(String file) throws Exception {
+    private HashMap<Integer, ScoreList> readRanking() throws Exception {
 
-        Map<Integer, ScoreList> output = new HashMap<>();
+        HashMap<Integer, ScoreList> output = new HashMap<>();
         ScoreList scores = new ScoreList();
-        File rankingFile = new File(file);
+        File rankingFile = new File(this.fbInitialRankingFile);
         int prevId = -1;
 
         if(!rankingFile.canRead())
-            throw new IllegalArgumentException("Can't read " + file);
+            throw new IllegalArgumentException("Can't read " + this.fbInitialRankingFile);
 
         Scanner scan = new Scanner(rankingFile);
         String line = null;
