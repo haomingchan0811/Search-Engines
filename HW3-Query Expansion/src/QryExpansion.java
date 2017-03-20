@@ -60,8 +60,9 @@ public class QryExpansion {
         this.fbDocs= model.getParam("fbDocs");
         this.outputPath = model.getFilePath("fbExpansionQueryFile");
 
-//        // select the query from previous generated files to speed up for Experiment 3/4
-//        String topTerms = "";   // pre-trianed top terms
+//      // select the query from previous generated files to speed up for Experiment 3/4/5
+//        // pre-trained top terms
+//        String topTerms = "";
 //        String[] query = topTerms.split("\n");
 //        for(String s: query){
 //            String[] p = s.split(":");
@@ -114,8 +115,9 @@ public class QryExpansion {
       }
       learnedQuery += ")";
 
-//      // fetch learned query from previous generated file to speed up for experiment 3/4
+//      // fetch learned query from previous generated file to speed up for experiment 3/4/5
 //      String learnedQuery = this.queries.get(qid);
+//      return processQuery(learnedQuery);
 
       // write the expanded query to a file
       if(!this.outputPath.equals(""))
