@@ -31,8 +31,8 @@
       <file leaf-file-name="QryExpansion.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/QryExpansion.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-625">
-              <caret line="129" column="50" lean-forward="false" selection-start-line="129" selection-start-column="50" selection-end-line="129" selection-end-column="50" />
+            <state relative-caret-position="276">
+              <caret line="182" column="0" lean-forward="true" selection-start-line="182" selection-start-column="0" selection-end-line="182" selection-end-column="0" />
               <folding>
                 <element signature="imports" expanded="true" />
                 <element signature="docComment;class#QryExpansion#0" expanded="false" />
@@ -59,7 +59,21 @@
             <state relative-caret-position="6086">
               <caret line="366" column="15" lean-forward="false" selection-start-line="366" selection-start-column="14" selection-end-line="366" selection-end-column="15" />
               <folding>
-                <element signature="imports" expanded="true" />
+                <element signature="n#!!doc" expanded="false" />
+                <element signature="e#8093#8094#0" expanded="false" />
+                <element signature="e#8151#8152#0" expanded="false" />
+                <element signature="e#12071#12072#0" expanded="false" />
+                <element signature="e#12135#12136#0" expanded="false" />
+                <element signature="e#12304#12305#0" expanded="false" />
+                <element signature="e#12347#12348#0" expanded="false" />
+                <element signature="e#12606#12607#0" expanded="false" />
+                <element signature="e#12648#12649#0" expanded="false" />
+                <element signature="e#12857#12858#0" expanded="false" />
+                <element signature="e#12889#12890#0" expanded="false" />
+                <element signature="e#13424#13425#0" expanded="false" />
+                <element signature="e#13452#13453#0" expanded="false" />
+                <element signature="e#13681#13682#0" expanded="false" />
+                <element signature="e#13725#13726#0" expanded="false" />
               </folding>
             </state>
           </provider>
@@ -193,8 +207,8 @@
     </option>
   </component>
   <component name="ProjectFrameBounds">
-    <option name="x" value="-747" />
-    <option name="y" value="-1057" />
+    <option name="x" value="-751" />
+    <option name="y" value="-1001" />
     <option name="width" value="1920" />
     <option name="height" value="1053" />
   </component>
@@ -505,8 +519,8 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="-747" y="-1057" width="1920" height="1053" extended-state="6" />
-    <editor active="true" />
+    <frame x="-751" y="-1001" width="1920" height="1053" extended-state="0" />
+    <editor active="false" />
     <layout>
       <window_info id="Palette" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
@@ -517,7 +531,7 @@
       <window_info id="Capture Analysis" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.34349594" sideWeight="0.50208336" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.34349594" sideWeight="0.49791667" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.34349594" sideWeight="0.49791667" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Properties" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
@@ -578,7 +592,21 @@
         <state relative-caret-position="6086">
           <caret line="366" column="15" lean-forward="false" selection-start-line="366" selection-start-column="14" selection-end-line="366" selection-end-column="15" />
           <folding>
-            <element signature="imports" expanded="true" />
+            <element signature="n#!!doc" expanded="false" />
+            <element signature="e#8093#8094#0" expanded="false" />
+            <element signature="e#8151#8152#0" expanded="false" />
+            <element signature="e#12071#12072#0" expanded="false" />
+            <element signature="e#12135#12136#0" expanded="false" />
+            <element signature="e#12304#12305#0" expanded="false" />
+            <element signature="e#12347#12348#0" expanded="false" />
+            <element signature="e#12606#12607#0" expanded="false" />
+            <element signature="e#12648#12649#0" expanded="false" />
+            <element signature="e#12857#12858#0" expanded="false" />
+            <element signature="e#12889#12890#0" expanded="false" />
+            <element signature="e#13424#13425#0" expanded="false" />
+            <element signature="e#13452#13453#0" expanded="false" />
+            <element signature="e#13681#13682#0" expanded="false" />
+            <element signature="e#13725#13726#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -677,6 +705,7 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="153">
           <caret line="11" column="13" lean-forward="false" selection-start-line="11" selection-start-column="13" selection-end-line="11" selection-end-column="13" />
+          <folding />
         </state>
       </provider>
     </entry>
@@ -793,7 +822,21 @@
         <state relative-caret-position="6086">
           <caret line="366" column="15" lean-forward="false" selection-start-line="366" selection-start-column="14" selection-end-line="366" selection-end-column="15" />
           <folding>
-            <element signature="imports" expanded="true" />
+            <element signature="n#!!doc" expanded="false" />
+            <element signature="e#8093#8094#0" expanded="false" />
+            <element signature="e#8151#8152#0" expanded="false" />
+            <element signature="e#12071#12072#0" expanded="false" />
+            <element signature="e#12135#12136#0" expanded="false" />
+            <element signature="e#12304#12305#0" expanded="false" />
+            <element signature="e#12347#12348#0" expanded="false" />
+            <element signature="e#12606#12607#0" expanded="false" />
+            <element signature="e#12648#12649#0" expanded="false" />
+            <element signature="e#12857#12858#0" expanded="false" />
+            <element signature="e#12889#12890#0" expanded="false" />
+            <element signature="e#13424#13425#0" expanded="false" />
+            <element signature="e#13452#13453#0" expanded="false" />
+            <element signature="e#13681#13682#0" expanded="false" />
+            <element signature="e#13725#13726#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -890,8 +933,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/QryExpansion.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-625">
-          <caret line="129" column="50" lean-forward="false" selection-start-line="129" selection-start-column="50" selection-end-line="129" selection-end-column="50" />
+        <state relative-caret-position="276">
+          <caret line="182" column="0" lean-forward="true" selection-start-line="182" selection-start-column="0" selection-end-line="182" selection-end-column="0" />
           <folding>
             <element signature="imports" expanded="true" />
             <element signature="docComment;class#QryExpansion#0" expanded="false" />
