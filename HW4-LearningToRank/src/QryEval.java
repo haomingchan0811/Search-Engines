@@ -58,6 +58,9 @@ public class QryEval {
         throw new IllegalArgumentException(USAGE);
 
     Map<String, String> parameters = readParameterFile(args[0]);
+//    for(Map.Entry item: parameters.entrySet()){
+//        System.out.println(item.getKey());
+//    }
     outputPath = parameters.get("trecEvalOutputPath");
     
     // update the customized outputLength (default: 100) 
@@ -71,7 +74,12 @@ public class QryEval {
     timer.start();
 
     // Perform experiments.
-    processQueryFile(parameters.get("queryFilePath"), model);
+    if(model instanceof RetrievalModelLeToR){   // if it's learningToRank Model, jump to class
+        RetrievalModelLeToR letor = (RetrievalModelLeToR) model;
+        letor.learn(parameters);
+    }
+    else
+        processQueryFile(parameters.get("queryFilePath"), model);
 
     // Clean up.
     timer.stop();
@@ -103,6 +111,10 @@ public class QryEval {
             break;
         case "indri":
             model = new RetrievalModelIndri();
+            model.setParameters(parameters);
+            break;
+        case "letor":
+            model = new RetrievalModelLeToR();
             model.setParameters(parameters);
             break;
         default:
@@ -251,19 +263,19 @@ public class QryEval {
     
     // Dummy output when no documents are retrieved 
     if(result.size() < 1){
-		System.out.println(prefix + " dummy 1 0 haominc_HW3");
-		writer.println(prefix + " dummy 1 0 haomingc_HW3");
+		System.out.println(prefix + " dummy 1 0 haominc_HW4");
+		writer.println(prefix + " dummy 1 0 haomingc_HW4");
     }
     else{
 	    /* Result with descending score then ascending external docid if tie exists.
 	   	 * Output N (outputLength) documents per query or all if N < result.size()
 	   	 */
 	   	for(int i = 0; i < result.size() && i < outputLength; i++) {
-	   		System.out.println(String.format("%s %s %s %s haomingc_HW3", prefix,
+	   		System.out.println(String.format("%s %s %s %s haomingc_HW4", prefix,
     		Idx.getExternalDocid(result.getDocid(i)), i + 1, result.getDocidScore(i)));
     			    	
 	    	// Write the results to the file in trec_eval format
-	    	writer.println(String.format("%s %s %s %s haomingc_HW3", prefix,
+	    	writer.println(String.format("%s %s %s %s haomingc_HW4", prefix,
 	   		Idx.getExternalDocid(result.getDocid(i)), i + 1, result.getDocidScore(i)));
 	   	}
     }

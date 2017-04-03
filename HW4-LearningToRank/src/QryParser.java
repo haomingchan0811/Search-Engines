@@ -449,5 +449,4 @@ public class QryParser {
     return tokens.toArray (new String[tokens.size()]);
   }
 
-
 }

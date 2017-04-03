@@ -11,7 +11,7 @@ import java.util.Map;
 import java.util.Scanner;
 
 /**
- *  An object that stores parameters for the ranked Boolean
+ *  An object that stores parameters for the Indri
  *  retrieval model (there are none) and indicates to the query
  *  operators how the query should be evaluated.
  )*/
@@ -23,7 +23,7 @@ public class RetrievalModelIndri extends RetrievalModel {
     private HashMap<Integer, ScoreList> initialRanking;
 
     public String defaultQrySopName() {
-        return new String("#and");
+        return new String("#or");
     }
 
     // set parameters for retrieval model

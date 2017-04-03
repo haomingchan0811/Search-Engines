@@ -5,7 +5,7 @@
 import java.util.Map;
 
 /**
- *  An object that stores parameters for the ranked Boolean
+ *  An object that stores parameters for the BM25
  *  retrieval model (there are none) and indicates to the query
  *  operators how the query should be evaluated.
  */
