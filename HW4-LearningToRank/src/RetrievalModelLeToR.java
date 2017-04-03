@@ -3,6 +3,9 @@
  */
 
 import java.io.*;
+import java.nio.file.FileSystems;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.*;
 
 /**
@@ -94,7 +97,7 @@ public class RetrievalModelLeToR extends RetrievalModel {
         TestRankSVM();
 
         // re-rank the documents according to the SVM output
-//        reRank();
+        reRank();
     }
 
     /**
@@ -236,49 +239,59 @@ public class RetrievalModelLeToR extends RetrievalModel {
      *  re-rank the documents according to the SVM output
      *  @throws IOException Error accessing the file.
      */
-    public void reRank() throws IOException {
+    public void reRank() throws Exception {
 
         // read the original ranking order from the file
-        BufferedReader input = null;
-        // a hashmap storing inital. [ExternalId, (featureIdx, featureVal)]
-        HashMap<String, ArrayList<>> Qryfeatures = new HashMap<>();
+        BufferedReader input_init = null;
+        BufferedReader input_score = null;
+
+        // remove the former trecEval output file
+        Path path = FileSystems.getDefault().getPath(this.param.get("trecEvalOutputPath"));
+        Files.deleteIfExists(path);
 
         try {
-            String file = this.param.get("letor:testingFeatureVectorsFile");
-            input = new BufferedReader(new FileReader(file));
-            String line = null;
+            String file1 = this.param.get("letor:testingFeatureVectorsFile");
+            input_init = new BufferedReader(new FileReader(file1));
+            String line_init = null;
+            String file2 = this.param.get("letor:testingDocumentScores");
+            input_score = new BufferedReader(new FileReader(file2));
+            String line_score = null;
+
+            // initialize re-ranking scorelist
+            ScoreList r = new ScoreList();
+            String currQid = "-1";
+            boolean isFirstQuery = true;
 
             //  Each pass of the loop processes one ranking record.
-            while((line = input.readLine()) != null) {
+            while(((line_init = input_init.readLine()) != null) &&
+                    ((line_score = input_score.readLine()) != null)) {
 
-                String[] tuple = line.split(" ");
-                String qid = tuple[0].trim();
-                String extId = tuple[2].trim();
+                String[] tuple = line_init.split(" ");
+                String t = tuple[1].trim();
+                String qid = t.substring(t.indexOf(":") + 1);
+                String extId = tuple[tuple.length - 1].trim();
+                int docid = Idx.getInternalDocid(extId);
+                double score = Double.parseDouble(line_score.trim());
 
-
-
-                // compute features for the relevant docs of this query
-                HashMap<String, String> relDocs = this.rel.get(qid);
-                for(Map.Entry<String, String> idScore: relDocs.entrySet()){
-                    String extId = idScore.getKey();
-                    HashMap<Integer, Double> temp = computeFeatures(terms, extId);
-                    Qryfeatures.put(extId, temp);
+                // create a new scoreList for the new query
+                if(!currQid.equals(qid)) {
+                    r.sort();
+                    if(isFirstQuery) isFirstQuery = false;
+                    else printResults(currQid, r);
+                    currQid = qid;
+                    r = new ScoreList();
                 }
 
-                // normalize features and write to file
-                String outFile = (genInitRanking? this.param.get("letor:testingFeatureVectorsFile"):
-                        this.param.get("letor:trainingFeatureVectorsFile"));
-                printNormFeatures(qid, Qryfeatures, outFile);
+                // insert the score for re-ranking
+                r.add(docid, score);
             }
+            printResults(currQid, r);  // print the last query
         }
         catch(IOException ex) {
             ex.printStackTrace();
         }
-        input.close();
-
-        // initialize output file
-        String file = this.param.get("trecEvalOutputPath");
-        PrintWriter writer = new PrintWriter(new FileWriter(file, true));
+        input_init.close();
+        input_score.close();
     }
 
     /**
@@ -437,9 +450,13 @@ public class RetrievalModelLeToR extends RetrievalModel {
         if(this.featureIdx.contains(16))
             features.put(16, getTermOverlap(terms, docid, "inlink"));
 
-//        // f17: A custom feature - use your imagination.
-//
-//        // f18: A custom feature - use your imagination.
+        // f17: A custom feature - use your imagination.
+        if(this.featureIdx.contains(17))
+            features.put(17, 0.0);
+
+        // f18: A custom feature - use your imagination.
+        if(this.featureIdx.contains(18))
+            features.put(18, 0.0);
 
         return features;
     }
@@ -563,11 +580,7 @@ public class RetrievalModelLeToR extends RetrievalModel {
             HashMap<Integer, Double> features = docFeature.getValue();
             if(features == null) continue;          // invalid document
 
-//            for(Map.Entry<Integer, Double> e: features.entrySet())
-//                System.out.println(String.format("%d, %f", e.getKey(), e.getValue()));
-
             for(int i: this.featureIdx){
-//                System.out.println(i);
                 double val = features.get(i);
                 if(val != -1) {                     // valid feature
                     minVal.put(i, Math.min(minVal.get(i), val));
@@ -598,8 +611,48 @@ public class RetrievalModelLeToR extends RetrievalModel {
                     output += String.format("%d:%f ", i, 0.0);
             }
             output += String.format("# %s", extId);
-            System.out.println(output);
+//            System.out.println(output);
             writer.println(output);
+        }
+        writer.close();
+    }
+
+    /**
+     * Print the query results.
+     *
+     * THIS IS NOT THE CORRECT OUTPUT FORMAT. YOU MUST CHANGE THIS METHOD SO
+     * THAT IT OUTPUTS IN THE FORMAT SPECIFIED IN THE HOMEWORK PAGE, WHICH IS:
+     * "QueryID Q0 DocID Rank Score RunID"
+     *
+     * @param queryId Original query.
+     * @param result A list of document ids and scores
+     * @throws IOException Error accessing the Lucene index.
+     */
+    public void printResults(String queryId, ScoreList result) throws IOException {
+
+        String trecEvalOutput = this.param.get("trecEvalOutputPath");
+        PrintWriter writer = new PrintWriter(new FileWriter(trecEvalOutput, true));
+
+        // Prefix of query id and fixed constant Q0
+        String prefix = queryId + " Q0";
+
+        // Dummy output when no documents are retrieved
+        if(result.size() < 1){
+            System.out.println(prefix + " dummy 1 0 haominc_HW4");
+            writer.println(prefix + " dummy 1 0 haomingc_HW4");
+        }
+        else{
+	    /* Result with descending score then ascending external docid if tie exists.
+	   	 * Output N (outputLength) documents per query or all if N < result.size()
+	   	 */
+            for(int i = 0; i < result.size() && i < 100; i++) {
+                System.out.println(String.format("%s %s %s %s haomingc_HW4", prefix,
+                        Idx.getExternalDocid(result.getDocid(i)), i + 1, result.getDocidScore(i)));
+
+                // Write the results to the file in trec_eval format
+                writer.println(String.format("%s %s %s %s haomingc_HW4", prefix,
+                        Idx.getExternalDocid(result.getDocid(i)), i + 1, result.getDocidScore(i)));
+            }
         }
         writer.close();
     }
