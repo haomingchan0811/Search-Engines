@@ -3,10 +3,7 @@
  */
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Scanner;
+import java.util.*;
 
 /**
  *  An object that stores parameters for the LearningToRanks
@@ -17,12 +14,12 @@ public class RetrievalModelLeToR extends RetrievalModel {
 
     private Map<String, String> param;
     private HashMap<String, Double> pagerank = new HashMap<>(), avgDocLen = new HashMap<>();
-    private HashMap<String, HashMap<String, String>> rel =
-            new HashMap<String, HashMap<String, String>>();
+    private HashMap<String, HashMap<String, String>> rel = new HashMap<>();
     private long numOfDocs;     // global stats of corpora
     private double k1, b, k3;   // parameters for BM25 model
     private double mu, lambda;  // parameters for Indri model
-    private int numOfFeatures;
+    private int numOfFeatures = 18;
+    private HashSet<Integer> featureIdx = new HashSet<>(); // the index of selected features
 
     public String defaultQrySopName() {
 		return null;
@@ -31,7 +28,16 @@ public class RetrievalModelLeToR extends RetrievalModel {
 	// set parameters for retrieval model
 	public void setParameters(Map<String, String> parameters) {
 	    this.param = parameters;
-	    this.numOfFeatures = 16;
+        for(int i = 1; i <= this.numOfFeatures; i++)   // initialize feature indices
+            this.featureIdx.add(i);
+
+	    // set desired features
+        if(this.param.containsKey("letor:featureDisable")){
+            String[] disabledIdx = this.param.get("letor:featureDisable").split(",");
+            this.numOfFeatures -= disabledIdx.length;
+            for(int i = 0; i < disabledIdx.length; i++)
+                this.featureIdx.remove(Integer.parseInt(disabledIdx[i]));
+        }
 
         // set parameters for BM25 model
         if(param.containsKey("BM25:k_1") && param.containsKey("BM25:k_3") && param.containsKey("BM25:b")) {
@@ -73,9 +79,22 @@ public class RetrievalModelLeToR extends RetrievalModel {
         cachePageRank(this.param.get("letor:pageRankFile"));          // cache (externalId, pageRank)
         cacheRelevance(this.param.get("letor:trainingQrelsFile"));    // cache [qid, (externalId, relScore)]
 
+        // training phase using RankSVM
         String trainFile = this.param.get("letor:trainingQueryFile");
-        processQueryFile(trainFile);
-//        String testFile = param.get("letor:queryFilePath");
+        processQueryFile(trainFile, false);
+
+        // runs svm_rank_learn from within Java to train the model
+        TrainRankSVM();
+
+        // testing phase using RankSVM
+        String testFile = param.get("queryFilePath");
+        processQueryFile(testFile, true);
+
+        // runs svm_rank_classify from within Java to fetch scores for documents.
+        TestRankSVM();
+
+        // re-rank the documents according to the SVM output
+//        reRank();
     }
 
     /**
@@ -108,6 +127,7 @@ public class RetrievalModelLeToR extends RetrievalModel {
      *  @throws IOException Error accessing the Lucene index.
      */
     public void cacheRelevance(String file) throws IOException{
+        this.rel = new HashMap<>();
 
         File pageRankFile = new File(file);
         if(!pageRankFile.canRead()) {
@@ -148,13 +168,133 @@ public class RetrievalModelLeToR extends RetrievalModel {
         }
     }
 
+    /**
+     *  Run svm_rank_learn from within Java to train the model.
+     *  @throws Exception Error accessing the Lucene index.
+     */
+    public void TrainRankSVM() throws Exception {
+        String execPath = this.param.get("letor:svmRankLearnPath");
+        String FEAT_GEN_c = this.param.get("letor:svmRankParamC");
+        String qrelsFeatureOutputFile = this.param.get("letor:trainingFeatureVectorsFile");
+        String modelOutputFile = this.param.get("letor:svmRankModelFile");
+        Process cmdProc = Runtime.getRuntime().exec(
+                new String[] { execPath, "-c", String.valueOf(FEAT_GEN_c), qrelsFeatureOutputFile,
+                        modelOutputFile });
+
+        // consume stdout and print it out for debugging purposes
+        BufferedReader stdoutReader = new BufferedReader(
+                new InputStreamReader(cmdProc.getInputStream()));
+        String line;
+        while ((line = stdoutReader.readLine()) != null)
+            System.out.println(line);
+
+        // consume stderr and print it for debugging purposes
+        BufferedReader stderrReader = new BufferedReader(
+                new InputStreamReader(cmdProc.getErrorStream()));
+        while ((line = stderrReader.readLine()) != null)
+            System.out.println(line);
+
+        // get the return value from the executable. 0 means success, non-zero indicates a problem
+        int retValue = cmdProc.waitFor();
+        if (retValue != 0)
+            throw new Exception("SVM Rank crashed.");
+    }
+
+    /**
+     *  Run svm_rank_classify from within Java to fetch scores for documents.
+     *  @throws Exception Error accessing the Lucene index.
+     */
+    public void TestRankSVM() throws Exception {
+        String execPath = this.param.get("letor:svmRankClassifyPath");
+        String qrelsFeatureOutputFile = this.param.get("letor:testingFeatureVectorsFile");
+        String modelInputFile = this.param.get("letor:svmRankModelFile");
+        String predictions = this.param.get("letor:testingDocumentScores");
+        Process cmdProc = Runtime.getRuntime().exec(
+                new String[] { execPath, qrelsFeatureOutputFile,
+                        modelInputFile, predictions});
+
+        // consume stdout and print it out for debugging purposes
+        BufferedReader stdoutReader = new BufferedReader(
+                new InputStreamReader(cmdProc.getInputStream()));
+        String line;
+        while ((line = stdoutReader.readLine()) != null)
+            System.out.println(line);
+
+        // consume stderr and print it for debugging purposes
+        BufferedReader stderrReader = new BufferedReader(
+                new InputStreamReader(cmdProc.getErrorStream()));
+        while ((line = stderrReader.readLine()) != null)
+            System.out.println(line);
+
+        // get the return value from the executable. 0 means success, non-zero indicates a problem
+        int retValue = cmdProc.waitFor();
+        if (retValue != 0)
+            throw new Exception("SVM Rank crashed.");
+    }
+
+    /**
+     *  re-rank the documents according to the SVM output
+     *  @throws IOException Error accessing the file.
+     */
+    public void reRank() throws IOException {
+
+        // read the original ranking order from the file
+        BufferedReader input = null;
+        // a hashmap storing inital. [ExternalId, (featureIdx, featureVal)]
+        HashMap<String, ArrayList<>> Qryfeatures = new HashMap<>();
+
+        try {
+            String file = this.param.get("letor:testingFeatureVectorsFile");
+            input = new BufferedReader(new FileReader(file));
+            String line = null;
+
+            //  Each pass of the loop processes one ranking record.
+            while((line = input.readLine()) != null) {
+
+                String[] tuple = line.split(" ");
+                String qid = tuple[0].trim();
+                String extId = tuple[2].trim();
+
+
+
+                // compute features for the relevant docs of this query
+                HashMap<String, String> relDocs = this.rel.get(qid);
+                for(Map.Entry<String, String> idScore: relDocs.entrySet()){
+                    String extId = idScore.getKey();
+                    HashMap<Integer, Double> temp = computeFeatures(terms, extId);
+                    Qryfeatures.put(extId, temp);
+                }
+
+                // normalize features and write to file
+                String outFile = (genInitRanking? this.param.get("letor:testingFeatureVectorsFile"):
+                        this.param.get("letor:trainingFeatureVectorsFile"));
+                printNormFeatures(qid, Qryfeatures, outFile);
+            }
+        }
+        catch(IOException ex) {
+            ex.printStackTrace();
+        }
+        input.close();
+
+        // initialize output file
+        String file = this.param.get("trecEvalOutputPath");
+        PrintWriter writer = new PrintWriter(new FileWriter(file, true));
+    }
 
     /**
      *  Process the query file.
      *  @param queryFilePath
      *  @throws IOException Error accessing the Lucene index.
      */
-    public void processQueryFile(String queryFilePath) throws Exception {
+    public void processQueryFile(String queryFilePath, boolean genInitRanking) throws Exception {
+
+        // generate testing data for top 100 documents in initial BM25 ranking
+        if(genInitRanking) {
+            RetrievalModelBM25 BM25 = new RetrievalModelBM25();
+            BM25.setParameters(this.param);
+            QryEval.processQueryFile(queryFilePath, BM25);
+            cacheRelevance(this.param.get("trecEvalOutputPath"));
+        }
 
         BufferedReader input = null;
 
@@ -173,22 +313,22 @@ public class RetrievalModelLeToR extends RetrievalModel {
                 String qid = line.substring(0, d);
                 String query = line.substring(d + 1);
                 String[] terms = QryParser.tokenizeString(query);
-                // a hashmap storing features for all relevant docs.
-                HashMap<String, ArrayList<Double>> Qryfeatures = new HashMap<>();
+
+                // a hashmap storing features for all relevant docs. [ExternalId, (featureIdx, featureVal)]
+                HashMap<String, HashMap<Integer, Double>> Qryfeatures = new HashMap<>();
 
                 // compute features for the relevant docs of this query
                 HashMap<String, String> relDocs = this.rel.get(qid);
                 for(Map.Entry<String, String> idScore: relDocs.entrySet()){
                     String extId = idScore.getKey();
-                    ArrayList<Double> temp = computeFeatures(terms, extId);
+                    HashMap<Integer, Double> temp = computeFeatures(terms, extId);
                     Qryfeatures.put(extId, temp);
                 }
 
                 // normalize features and write to file
-                printNormFeatures(qid, Qryfeatures);
-
-
-//                System.out.println("!!!!!!");
+                String outFile = (genInitRanking? this.param.get("letor:testingFeatureVectorsFile"):
+                        this.param.get("letor:trainingFeatureVectorsFile"));
+                printNormFeatures(qid, Qryfeatures, outFile);
             }
         }
         catch(IOException ex) {
@@ -198,142 +338,104 @@ public class RetrievalModelLeToR extends RetrievalModel {
     }
 
     /**
-     *  Normalize feature vector for a query and write to file.
-     *  @param qid query id.
-     *  @param Qryfeatures features of documents corresponding to a query.
-     *  @throws Exception Error accessing the Lucene index.
-     */
-    public void printNormFeatures(String qid, HashMap<String, ArrayList<Double>> Qryfeatures) throws Exception {
-
-        // initialize output file
-        FileWriter f = new FileWriter(this.param.get("letor:trainingFeatureVectorsFile"));
-        PrintWriter writer = new PrintWriter(f, true);
-
-        // initialize maximal and minimum value of each feature
-        ArrayList<Double> minVal = new ArrayList<>(), maxVal = new ArrayList<>();
-        for(int i = 0; i < this.numOfFeatures; i++){
-            minVal.add(Double.MAX_VALUE);
-            maxVal.add(Double.MIN_VALUE);
-        }
-
-        // find maximal and minimum value of each feature
-        for(Map.Entry<String, ArrayList<Double>> docFeature: Qryfeatures.entrySet()) {
-            ArrayList<Double> features = docFeature.getValue();
-            if(features == null) continue;          // invalid document
-
-            for(int i = 0; i < this.numOfFeatures; i++) {
-                double val = features.get(i);
-                if(val != -1) {                     // valid feature
-                    minVal.set(i, Math.min(minVal.get(i), val));
-                    maxVal.set(i, Math.max(minVal.get(i), val));
-                }
-            }
-        }
-
-        // denominator (max - min) for minMax normalization
-        ArrayList<Double> valDiff = new ArrayList<>();
-        for(int i = 0; i < this.numOfFeatures; i++)
-            valDiff.add(maxVal.get(i) - minVal.get(i));
-
-        // normalize feature values to [0, 1] and write to file
-        for(Map.Entry<String, ArrayList<Double>> docFeature: Qryfeatures.entrySet()) {
-            ArrayList<Double> features = docFeature.getValue();
-            if(features == null) continue;          // invalid document
-            String extId = docFeature.getKey();
-            String relScore = this.rel.get(qid).get(extId);
-            String output = String.format("%s qid:%s ", relScore, qid);
-
-            for(int i = 0; i < this.numOfFeatures; i++) {
-                double val = features.get(i);
-                double diff = valDiff.get(i);
-                if((val != -1) && (diff != 0))      // valid feature
-                    output += String.format("%d:%f ", i + 1, (val - minVal.get(i)) / diff);
-                else
-                    output += String.format("%d:%f ", i + 1, 0.0);
-            }
-            output += String.format("# %s", extId);
-            System.out.println(output);
-            writer.println(output);
-        }
-        writer.close();
-    }
-
-    /**
      *  Compute feature vector for a query.
      *  @param extId external id of the document.
      *  @param terms An array of tokenize query terms.
      *  @throws IOException Error accessing the Lucene index.
      */
-    public ArrayList<Double> computeFeatures(String[] terms, String extId) throws Exception {
+    public HashMap<Integer, Double> computeFeatures(String[] terms, String extId) throws Exception {
         int docid;
         try{ docid = Idx.getInternalDocid(extId);}
         catch(Exception e) {return null;}
 
-        ArrayList<Double> features = new ArrayList<>();   // empty feature vector
+        HashMap<Integer, Double> features = new HashMap<>();   // empty feature vector
 
         // f1: Spam score for d
-        try{
-            int spamScore = Integer.parseInt(Idx.getAttribute("score", docid));
-            features.add(spamScore * 1.0);
+        if(this.featureIdx.contains(1)){
+            try{
+                int spamScore = Integer.parseInt(Idx.getAttribute("score", docid));
+                features.put(1, spamScore * 1.0);
+            } catch(Exception e) {
+                features.put(1, -1.0);
+            }  // marker of invalid score
         }
-        catch(Exception e) { features.add(-1.0);}  // marker of invalid score
-
 
         // f2: Url depth for d(number of '/' in the rawUrl field)
-        try{
-            String rawUrl = Idx.getAttribute("rawUrl", docid);
-            int num = rawUrl.replaceAll("[^/]", "").length();
-            features.add(num * 1.0 - 2);   // subtract the prefix "http://"
+        if(this.featureIdx.contains(2)){
+            try {
+                String rawUrl = Idx.getAttribute("rawUrl", docid);
+                int num = rawUrl.replaceAll("[^/]", "").length();
+                features.put(2, num * 1.0 - 2);   // subtract the prefix "http://"
+            } catch(Exception e) {
+                features.put(2, -1.0);
+            }  // marker of invalid score
         }
-        catch(Exception e) { features.add(-1.0);}  // marker of invalid score
 
         // f3: FromWikipedia score for d (1 if rawUrl contains "wikipedia.org", o/w 0)
-        try{
-            String rawUrl = Idx.getAttribute("rawUrl", docid);
-            boolean fromWiki = rawUrl.contains("wikipedia.org");
-            features.add(fromWiki? 1.0: 0.0);
+        if(this.featureIdx.contains(3)) {
+            try {
+                String rawUrl = Idx.getAttribute("rawUrl", docid);
+                boolean fromWiki = rawUrl.contains("wikipedia.org");
+                features.put(3, fromWiki ? 1.0 : 0.0);
+            } catch (Exception e) {
+                features.put(3, -1.0);
+            }  // marker of invalid score
         }
-        catch(Exception e) { features.add(-1.0);}  // marker of invalid score
 
         // f4: PageRank score for d (read from file).
-        try{ features.add(this.pagerank.get(extId));}
-        catch(Exception e) { features.add(-1.0);}  // marker of invalid score
+        if(this.featureIdx.contains(4)) {
+            if(this.pagerank.containsKey(extId))
+                features.put(4, this.pagerank.get(extId));
+            else features.put(4, -1.0);  // marker of invalid score
+        }
 
         // f5: BM25 score for <q, d(body)>.
-        features.add(getBM25(terms, docid, "body"));
+        if(this.featureIdx.contains(5))
+            features.put(5, getBM25(terms, docid, "body"));
 
-//        // f6: Indri score for <q, dbody>.
-        features.add(getIndri(terms, docid, "body"));
+        // f6: Indri score for <q, dbody>.
+        if(this.featureIdx.contains(6))
+            features.put(6, getIndri(terms, docid, "body"));
 
         // f7: Term overlap score for <q, dbody>
-        features.add(getTermOverlap(terms, docid, "body"));
+        if(this.featureIdx.contains(7))
+            features.put(7, getTermOverlap(terms, docid, "body"));
 
         // f8: BM25 score for <q, dtitle>.
-        features.add(getBM25(terms, docid, "title"));
+        if(this.featureIdx.contains(8))
+            features.put(8, getBM25(terms, docid, "title"));
 
         // f9: Indri score for <q, dtitle>.
-        features.add(getIndri(terms, docid, "title"));
+        if(this.featureIdx.contains(9))
+            features.put(9, getIndri(terms, docid, "title"));
 
         // f10: Term overlap score for <q, dtitle>.
-        features.add(getTermOverlap(terms, docid, "title"));
+        if(this.featureIdx.contains(10))
+            features.put(10, getTermOverlap(terms, docid, "title"));
 
         // f11: BM25 score for <q, durl>.
-        features.add(getBM25(terms, docid, "url"));
+        if(this.featureIdx.contains(11))
+            features.put(11, getBM25(terms, docid, "url"));
 
         // f12: Indri score for <q, durl>.
-        features.add(getIndri(terms, docid, "url"));
+        if(this.featureIdx.contains(12))
+            features.put(12, getIndri(terms, docid, "url"));
 
         // f13: Term overlap score for <q, durl>.
-        features.add(getTermOverlap(terms, docid, "url"));
+        if(this.featureIdx.contains(13))
+            features.put(13, getTermOverlap(terms, docid, "url"));
 
         // f14: BM25 score for <q, dinlink>.
-        features.add(getBM25(terms, docid, "inlink"));
+        if(this.featureIdx.contains(14))
+            features.put(14, getBM25(terms, docid, "inlink"));
 
         // f15: Indri score for <q, dinlink>.
-        features.add(getIndri(terms, docid, "inlink"));
+        if(this.featureIdx.contains(15))
+            features.put(15, getIndri(terms, docid, "inlink"));
 
         // f16: Term overlap score for <q, dinlink>.
-        features.add(getTermOverlap(terms, docid, "inlink"));
+        if(this.featureIdx.contains(16))
+            features.put(16, getTermOverlap(terms, docid, "inlink"));
 
 //        // f17: A custom feature - use your imagination.
 //
@@ -434,6 +536,72 @@ public class RetrievalModelLeToR extends RetrievalModel {
             if(TermIdx != -1) overlap += 1;  // term exists
         }
         return overlap / terms.length;
+    }
+
+    /**
+     *  Normalize feature vector for a query and write to file.
+     *  @param qid query id.
+     *  @param Qryfeatures features of documents corresponding to a query.
+     *  @throws Exception Error accessing the Lucene index.
+     */
+    public void printNormFeatures(String qid, HashMap<String,
+            HashMap<Integer, Double>> Qryfeatures, String file) throws Exception {
+
+        // initialize output file
+        FileWriter f = new FileWriter(file, true);
+        PrintWriter writer = new PrintWriter(f);
+
+        // initialize maximal and minimum value of each feature
+        HashMap<Integer, Double> minVal = new HashMap<>(), maxVal = new HashMap<>();
+        for(int i: this.featureIdx){
+            minVal.put(i, Double.MAX_VALUE);
+            maxVal.put(i, Double.MIN_VALUE);
+        }
+
+        // find maximal and minimum value of each feature
+        for(Map.Entry<String, HashMap<Integer, Double>> docFeature: Qryfeatures.entrySet()) {
+            HashMap<Integer, Double> features = docFeature.getValue();
+            if(features == null) continue;          // invalid document
+
+//            for(Map.Entry<Integer, Double> e: features.entrySet())
+//                System.out.println(String.format("%d, %f", e.getKey(), e.getValue()));
+
+            for(int i: this.featureIdx){
+//                System.out.println(i);
+                double val = features.get(i);
+                if(val != -1) {                     // valid feature
+                    minVal.put(i, Math.min(minVal.get(i), val));
+                    maxVal.put(i, Math.max(maxVal.get(i), val));
+                }
+            }
+        }
+
+        // denominator (max - min) for minMax normalization
+        HashMap<Integer, Double> valDiff = new HashMap<>();
+        for(int i: this.featureIdx)
+            valDiff.put(i, maxVal.get(i) - minVal.get(i));
+
+        // normalize feature values to [0, 1] and write to file
+        for(Map.Entry<String, HashMap<Integer, Double>> docFeature: Qryfeatures.entrySet()) {
+            HashMap<Integer, Double> features = docFeature.getValue();
+            if(features == null) continue;          // invalid document outside the corpora
+            String extId = docFeature.getKey();
+            String relScore = this.rel.get(qid).get(extId);
+            String output = String.format("%s qid:%s ", relScore, qid);
+
+            for(int i: this.featureIdx) {
+                double val = features.get(i);
+                double diff = valDiff.get(i);
+                if((val != -1) && (diff != 0))      // valid feature
+                    output += String.format("%d:%f ", i, (val - minVal.get(i)) / diff);
+                else
+                    output += String.format("%d:%f ", i, 0.0);
+            }
+            output += String.format("# %s", extId);
+            System.out.println(output);
+            writer.println(output);
+        }
+        writer.close();
     }
 
 }

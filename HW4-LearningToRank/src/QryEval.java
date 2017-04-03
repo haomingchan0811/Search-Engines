@@ -220,7 +220,7 @@ public class QryEval {
            ("Syntax error:  Missing ':' in query line.");
         }
 
-        printMemoryUsage(false);
+        // printMemoryUsage(false);
         String qid = qLine.substring(0, d);
         String query = qLine.substring(d + 1);
         

@@ -19,11 +19,15 @@
       <file leaf-file-name="QryEval.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/QryEval.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="544">
-              <caret line="281" column="14" lean-forward="false" selection-start-line="281" selection-start-column="0" selection-end-line="282" selection-end-column="0" />
+            <state relative-caret-position="-1997">
+              <caret line="77" column="0" lean-forward="false" selection-start-line="77" selection-start-column="0" selection-end-line="77" selection-end-column="0" />
               <folding>
                 <element signature="docComment;method#initializeRetrievalModel#0;class#QryEval#0" expanded="false" />
                 <element signature="method#initializeRetrievalModel#0;class#QryEval#0" expanded="false" />
+                <element signature="docComment;method#printMemoryUsage#0;class#QryEval#0" expanded="false" />
+                <element signature="method#printMemoryUsage#0;class#QryEval#0" expanded="false" />
+                <element signature="docComment;method#readParameterFile#0;class#QryEval#0" expanded="false" />
+                <element signature="method#readParameterFile#0;class#QryEval#0" expanded="false" />
               </folding>
             </state>
           </provider>
@@ -32,18 +36,29 @@
       <file leaf-file-name="RetrievalModelLeToR.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/RetrievalModelLeToR.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-909">
-              <caret line="254" column="39" lean-forward="true" selection-start-line="254" selection-start-column="39" selection-end-line="254" selection-end-column="39" />
+            <state relative-caret-position="281">
+              <caret line="241" column="28" lean-forward="false" selection-start-line="241" selection-start-column="28" selection-end-line="241" selection-end-column="28" />
               <folding>
                 <element signature="imports" expanded="true" />
-                <element signature="e#659#692#0" expanded="true" />
                 <element signature="method#cachePageRank#0;class#RetrievalModelLeToR#0" expanded="false" />
+                <element signature="docComment;method#cacheRelevance#0;class#RetrievalModelLeToR#0" expanded="false" />
                 <element signature="method#cacheRelevance#0;class#RetrievalModelLeToR#0" expanded="false" />
                 <element signature="method#cacheAvgDocLen#0;class#RetrievalModelLeToR#0" expanded="false" />
+                <element signature="method#TrainRankSVM#0;class#RetrievalModelLeToR#0" expanded="false" />
+                <element signature="method#TestRankSVM#0;class#RetrievalModelLeToR#0" expanded="false" />
+                <element signature="docComment;method#processQueryFile#0;class#RetrievalModelLeToR#0" expanded="false" />
+                <element signature="docComment;method#computeFeatures#0;class#RetrievalModelLeToR#0" expanded="false" />
+                <element signature="method#computeFeatures#0;class#RetrievalModelLeToR#0" expanded="false" />
                 <element signature="docComment;method#getBM25#0;class#RetrievalModelLeToR#0" expanded="false" />
-                <marker date="1491201583000" expanded="false" signature="3323:3474" ph="/**...*/" />
-                <marker date="1491201583000" expanded="false" signature="4046:4217" ph="/**...*/" />
-                <marker date="1491201583000" expanded="false" signature="16503:16811" ph="/**...*/" />
+                <element signature="method#getBM25#0;class#RetrievalModelLeToR#0" expanded="false" />
+                <element signature="docComment;method#getIndri#0;class#RetrievalModelLeToR#0" expanded="false" />
+                <element signature="method#getIndri#0;class#RetrievalModelLeToR#0" expanded="false" />
+                <element signature="method#getTermOverlap#0;class#RetrievalModelLeToR#0" expanded="false" />
+                <element signature="docComment;method#printNormFeatures#0;class#RetrievalModelLeToR#0" expanded="false" />
+                <marker date="1491243823000" expanded="false" signature="4158:4309" ph="/**...*/" />
+                <marker date="1491243823000" expanded="false" signature="6522:6657" ph="/**...*/" />
+                <marker date="1491243823000" expanded="false" signature="8029:8178" ph="/**...*/" />
+                <marker date="1491243823000" expanded="false" signature="21086:21394" ph="/**...*/" />
               </folding>
             </state>
           </provider>
@@ -53,7 +68,7 @@
         <entry file="file://$PROJECT_DIR$/src/RetrievalModelIndri.java">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="459">
-              <caret line="51" column="0" lean-forward="true" selection-start-line="51" selection-start-column="0" selection-end-line="51" selection-end-column="0" />
+              <caret line="51" column="0" lean-forward="false" selection-start-line="51" selection-start-column="0" selection-end-line="51" selection-end-column="0" />
               <folding />
             </state>
           </provider>
@@ -123,7 +138,7 @@
         <entry file="file://$PROJECT_DIR$/src/QryExpansion.java">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="468">
-              <caret line="214" column="43" lean-forward="true" selection-start-line="214" selection-start-column="0" selection-end-line="215" selection-end-column="0" />
+              <caret line="214" column="43" lean-forward="false" selection-start-line="214" selection-start-column="0" selection-end-line="215" selection-end-column="0" />
               <folding />
             </state>
           </provider>
@@ -134,9 +149,11 @@
   <component name="FindInProjectRecents">
     <findStrings>
       <find>qLine</find>
+      <find>add</find>
     </findStrings>
     <replaceStrings>
       <replace>line</replace>
+      <replace>put</replace>
     </replaceStrings>
   </component>
   <component name="GradleLocalSettings">
@@ -567,7 +584,7 @@
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
-      <option name="time" value="1" />
+      <option name="time" value="3" />
     </breakpoint-manager>
     <watches-manager />
   </component>
@@ -645,7 +662,7 @@
     <entry file="file://$PROJECT_DIR$/src/QryExpansion.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="468">
-          <caret line="214" column="43" lean-forward="true" selection-start-line="214" selection-start-column="0" selection-end-line="215" selection-end-column="0" />
+          <caret line="214" column="43" lean-forward="false" selection-start-line="214" selection-start-column="0" selection-end-line="215" selection-end-column="0" />
           <folding />
         </state>
       </provider>
@@ -669,7 +686,7 @@
     <entry file="file://$PROJECT_DIR$/src/RetrievalModelIndri.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="459">
-          <caret line="51" column="0" lean-forward="true" selection-start-line="51" selection-start-column="0" selection-end-line="51" selection-end-column="0" />
+          <caret line="51" column="0" lean-forward="false" selection-start-line="51" selection-start-column="0" selection-end-line="51" selection-end-column="0" />
           <folding />
         </state>
       </provider>
@@ -700,29 +717,44 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/QryEval.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="544">
-          <caret line="281" column="14" lean-forward="false" selection-start-line="281" selection-start-column="0" selection-end-line="282" selection-end-column="0" />
+        <state relative-caret-position="-1997">
+          <caret line="77" column="0" lean-forward="false" selection-start-line="77" selection-start-column="0" selection-end-line="77" selection-end-column="0" />
           <folding>
             <element signature="docComment;method#initializeRetrievalModel#0;class#QryEval#0" expanded="false" />
             <element signature="method#initializeRetrievalModel#0;class#QryEval#0" expanded="false" />
+            <element signature="docComment;method#printMemoryUsage#0;class#QryEval#0" expanded="false" />
+            <element signature="method#printMemoryUsage#0;class#QryEval#0" expanded="false" />
+            <element signature="docComment;method#readParameterFile#0;class#QryEval#0" expanded="false" />
+            <element signature="method#readParameterFile#0;class#QryEval#0" expanded="false" />
           </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/RetrievalModelLeToR.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-909">
-          <caret line="254" column="39" lean-forward="true" selection-start-line="254" selection-start-column="39" selection-end-line="254" selection-end-column="39" />
+        <state relative-caret-position="281">
+          <caret line="241" column="28" lean-forward="false" selection-start-line="241" selection-start-column="28" selection-end-line="241" selection-end-column="28" />
           <folding>
             <element signature="imports" expanded="true" />
-            <element signature="e#659#692#0" expanded="true" />
             <element signature="method#cachePageRank#0;class#RetrievalModelLeToR#0" expanded="false" />
+            <element signature="docComment;method#cacheRelevance#0;class#RetrievalModelLeToR#0" expanded="false" />
             <element signature="method#cacheRelevance#0;class#RetrievalModelLeToR#0" expanded="false" />
             <element signature="method#cacheAvgDocLen#0;class#RetrievalModelLeToR#0" expanded="false" />
+            <element signature="method#TrainRankSVM#0;class#RetrievalModelLeToR#0" expanded="false" />
+            <element signature="method#TestRankSVM#0;class#RetrievalModelLeToR#0" expanded="false" />
+            <element signature="docComment;method#processQueryFile#0;class#RetrievalModelLeToR#0" expanded="false" />
+            <element signature="docComment;method#computeFeatures#0;class#RetrievalModelLeToR#0" expanded="false" />
+            <element signature="method#computeFeatures#0;class#RetrievalModelLeToR#0" expanded="false" />
             <element signature="docComment;method#getBM25#0;class#RetrievalModelLeToR#0" expanded="false" />
-            <marker date="1491201583000" expanded="false" signature="3323:3474" ph="/**...*/" />
-            <marker date="1491201583000" expanded="false" signature="4046:4217" ph="/**...*/" />
-            <marker date="1491201583000" expanded="false" signature="16503:16811" ph="/**...*/" />
+            <element signature="method#getBM25#0;class#RetrievalModelLeToR#0" expanded="false" />
+            <element signature="docComment;method#getIndri#0;class#RetrievalModelLeToR#0" expanded="false" />
+            <element signature="method#getIndri#0;class#RetrievalModelLeToR#0" expanded="false" />
+            <element signature="method#getTermOverlap#0;class#RetrievalModelLeToR#0" expanded="false" />
+            <element signature="docComment;method#printNormFeatures#0;class#RetrievalModelLeToR#0" expanded="false" />
+            <marker date="1491243823000" expanded="false" signature="4158:4309" ph="/**...*/" />
+            <marker date="1491243823000" expanded="false" signature="6522:6657" ph="/**...*/" />
+            <marker date="1491243823000" expanded="false" signature="8029:8178" ph="/**...*/" />
+            <marker date="1491243823000" expanded="false" signature="21086:21394" ph="/**...*/" />
           </folding>
         </state>
       </provider>
