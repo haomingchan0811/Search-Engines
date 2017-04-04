@@ -449,9 +449,15 @@ public class RetrievalModelLeToR extends RetrievalModel {
         if(this.featureIdx.contains(16))
             features.put(16, getTermOverlap(terms, docid, "inlink"));
 
-        // f17: A custom feature - use your imagination.
-        if(this.featureIdx.contains(17))
-            features.put(17, 0.0);
+        // f17: Number of terms in the page title
+        if(this.featureIdx.contains(17)){
+            try{
+                int titleLen = Idx.getFieldLength("title", docid);
+                features.put(17, titleLen * 1.0);
+            } catch(Exception e){
+                features.put(17, -1.0);
+            } // marker of invalid score
+        }
 
         // f18: A custom feature - use your imagination.
         if(this.featureIdx.contains(18))
@@ -610,7 +616,7 @@ public class RetrievalModelLeToR extends RetrievalModel {
                     output += String.format("%d:%f ", i, 0.0);
             }
             output += String.format("# %s", extId);
-//            System.out.println(output);
+            System.out.println(output);
             writer.println(output);
         }
         writer.close();

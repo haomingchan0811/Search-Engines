@@ -1,7 +1,7 @@
 queryFilePath=HW4-test.qry
 indexPath=index
-trecEvalOutputPath=letor.teIn
-retrievalAlgorithm=bm25
+trecEvalOutputPath=test.teIn
+retrievalAlgorithm=letor
 BM25:k_1=1.2
 BM25:b=0.75
 BM25:k_3=0.0
@@ -11,7 +11,6 @@ letor:trainingQueryFile=HW4-train.qry
 letor:trainingQrelsFile=HW4-train.qrel
 letor:trainingFeatureVectorsFile=train.features
 letor:pageRankFile=PageRankInIndex.txt
-letor:featureDisable=17,18
 letor:svmRankLearnPath=svm_rank/svm_rank_learn
 letor:svmRankClassifyPath=svm_rank/svm_rank_classify
 letor:svmRankParamC=0.001
