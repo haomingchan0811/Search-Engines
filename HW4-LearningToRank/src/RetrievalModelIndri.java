@@ -23,7 +23,7 @@ public class RetrievalModelIndri extends RetrievalModel {
     private HashMap<Integer, ScoreList> initialRanking;
 
     public String defaultQrySopName() {
-        return new String("#or");
+        return new String("#and");
     }
 
     // set parameters for retrieval model

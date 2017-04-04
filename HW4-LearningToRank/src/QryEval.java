@@ -73,8 +73,8 @@ public class QryEval {
 
     timer.start();
 
-    // Perform experiments.
-    if(model instanceof RetrievalModelLeToR){   // if it's learningToRank Model, jump to class
+    // if it's learningToRank Model, jump to leToR class to perform machine learning.
+    if(model instanceof RetrievalModelLeToR){
         RetrievalModelLeToR letor = (RetrievalModelLeToR) model;
         letor.learn(parameters);
     }
@@ -263,7 +263,7 @@ public class QryEval {
     
     // Dummy output when no documents are retrieved 
     if(result.size() < 1){
-		System.out.println(prefix + " dummy 1 0 haominc_HW4");
+//		System.out.println(prefix + " dummy 1 0 haominc_HW4");
 		writer.println(prefix + " dummy 1 0 haomingc_HW4");
     }
     else{
@@ -271,9 +271,9 @@ public class QryEval {
 	   	 * Output N (outputLength) documents per query or all if N < result.size()
 	   	 */
 	   	for(int i = 0; i < result.size() && i < outputLength; i++) {
-	   		System.out.println(String.format("%s %s %s %s haomingc_HW4", prefix,
-    		Idx.getExternalDocid(result.getDocid(i)), i + 1, result.getDocidScore(i)));
-    			    	
+//	   		System.out.println(String.format("%s %s %s %s haomingc_HW4", prefix,
+//    		Idx.getExternalDocid(result.getDocid(i)), i + 1, result.getDocidScore(i)));
+
 	    	// Write the results to the file in trec_eval format
 	    	writer.println(String.format("%s %s %s %s haomingc_HW4", prefix,
 	   		Idx.getExternalDocid(result.getDocid(i)), i + 1, result.getDocidScore(i)));

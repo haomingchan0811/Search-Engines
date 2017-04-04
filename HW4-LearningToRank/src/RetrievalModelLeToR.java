@@ -3,9 +3,6 @@
  */
 
 import java.io.*;
-import java.nio.file.FileSystems;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.*;
 
 /**
@@ -184,18 +181,18 @@ public class RetrievalModelLeToR extends RetrievalModel {
                 new String[] { execPath, "-c", String.valueOf(FEAT_GEN_c), qrelsFeatureOutputFile,
                         modelOutputFile });
 
-        // consume stdout and print it out for debugging purposes
-        BufferedReader stdoutReader = new BufferedReader(
-                new InputStreamReader(cmdProc.getInputStream()));
-        String line;
-        while ((line = stdoutReader.readLine()) != null)
-            System.out.println(line);
-
-        // consume stderr and print it for debugging purposes
-        BufferedReader stderrReader = new BufferedReader(
-                new InputStreamReader(cmdProc.getErrorStream()));
-        while ((line = stderrReader.readLine()) != null)
-            System.out.println(line);
+//        // consume stdout and print it out for debugging purposes
+//        BufferedReader stdoutReader = new BufferedReader(
+//                new InputStreamReader(cmdProc.getInputStream()));
+//        String line;
+//        while ((line = stdoutReader.readLine()) != null)
+//            System.out.println(line);
+//
+//        // consume stderr and print it for debugging purposes
+//        BufferedReader stderrReader = new BufferedReader(
+//                new InputStreamReader(cmdProc.getErrorStream()));
+//        while ((line = stderrReader.readLine()) != null)
+//            System.out.println(line);
 
         // get the return value from the executable. 0 means success, non-zero indicates a problem
         int retValue = cmdProc.waitFor();
@@ -216,18 +213,18 @@ public class RetrievalModelLeToR extends RetrievalModel {
                 new String[] { execPath, qrelsFeatureOutputFile,
                         modelInputFile, predictions});
 
-        // consume stdout and print it out for debugging purposes
-        BufferedReader stdoutReader = new BufferedReader(
-                new InputStreamReader(cmdProc.getInputStream()));
-        String line;
-        while ((line = stdoutReader.readLine()) != null)
-            System.out.println(line);
-
-        // consume stderr and print it for debugging purposes
-        BufferedReader stderrReader = new BufferedReader(
-                new InputStreamReader(cmdProc.getErrorStream()));
-        while ((line = stderrReader.readLine()) != null)
-            System.out.println(line);
+//        // consume stdout and print it out for debugging purposes
+//        BufferedReader stdoutReader = new BufferedReader(
+//                new InputStreamReader(cmdProc.getInputStream()));
+//        String line;
+//        while ((line = stdoutReader.readLine()) != null)
+//            System.out.println(line);
+//
+//        // consume stderr and print it for debugging purposes
+//        BufferedReader stderrReader = new BufferedReader(
+//                new InputStreamReader(cmdProc.getErrorStream()));
+//        while ((line = stderrReader.readLine()) != null)
+//            System.out.println(line);
 
         // get the return value from the executable. 0 means success, non-zero indicates a problem
         int retValue = cmdProc.waitFor();
@@ -245,9 +242,10 @@ public class RetrievalModelLeToR extends RetrievalModel {
         BufferedReader input_init = null;
         BufferedReader input_score = null;
 
-        // remove the former trecEval output file
-        Path path = FileSystems.getDefault().getPath(this.param.get("trecEvalOutputPath"));
-        Files.deleteIfExists(path);
+        // re-initialize the former trecEval output file
+        String trecEval = this.param.get("trecEvalOutputPath");
+        PrintWriter writer = new PrintWriter(new FileWriter(trecEval, false));
+        writer.close();
 
         try {
             String file1 = this.param.get("letor:testingFeatureVectorsFile");
@@ -285,6 +283,7 @@ public class RetrievalModelLeToR extends RetrievalModel {
                 // insert the score for re-ranking
                 r.add(docid, score);
             }
+            r.sort();
             printResults(currQid, r);  // print the last query
         }
         catch(IOException ex) {
@@ -572,7 +571,7 @@ public class RetrievalModelLeToR extends RetrievalModel {
         HashMap<Integer, Double> minVal = new HashMap<>(), maxVal = new HashMap<>();
         for(int i: this.featureIdx){
             minVal.put(i, Double.MAX_VALUE);
-            maxVal.put(i, Double.MIN_VALUE);
+            maxVal.put(i, -Double.MAX_VALUE);
         }
 
         // find maximal and minimum value of each feature
@@ -638,7 +637,7 @@ public class RetrievalModelLeToR extends RetrievalModel {
 
         // Dummy output when no documents are retrieved
         if(result.size() < 1){
-            System.out.println(prefix + " dummy 1 0 haominc_HW4");
+//            System.out.println(prefix + " dummy 1 0 haominc_HW4");
             writer.println(prefix + " dummy 1 0 haomingc_HW4");
         }
         else{
