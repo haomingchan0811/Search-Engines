@@ -38,7 +38,7 @@
 #
 
 # example usage
-print formulate_query("designer dogs", "sd", 0.5, 0.25, 0.5 ) . "\n\n";
+print formulate_query("tn highway patrol", "sd", 0.5, 0.25, 0.5 ) . "\n\n";
 # print formulate_query( "white house rose garden", "fd", 0.8, 0.1, 0.1 ) . "\n\n";
 
 #
