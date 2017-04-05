@@ -115,7 +115,8 @@ public class RetrievalModelLeToR extends RetrievalModel {
         do {
             line = scan.nextLine();
             String[] pair = line.split("\t");
-            this.pagerank.put(pair[0].trim(), Double.parseDouble(pair[1].trim()));
+            double score = (double) Float.parseFloat(pair[1].trim());
+            this.pagerank.put(pair[0].trim(), score);
         } while(scan.hasNext());
 
         scan.close();
@@ -376,8 +377,8 @@ public class RetrievalModelLeToR extends RetrievalModel {
         if(this.featureIdx.contains(2)){
             try {
                 String rawUrl = Idx.getAttribute("rawUrl", docid);
-                int num = rawUrl.replaceAll("[^/]", "").length();
-                features.put(2, num * 1.0 - 2);   // subtract the prefix "http://"
+                int num = rawUrl.replaceAll("[^/]", "").length() - 2;
+                features.put(2, num * 1.0);   // subtract the prefix "http://"
             } catch(Exception e) {
                 features.put(2, -1.0);
             }  // marker of invalid score
@@ -574,9 +575,9 @@ public class RetrievalModelLeToR extends RetrievalModel {
         for(String term: terms) {
             // check whether the term exists in the document
             int TermIdx = vec.indexOfStem(term);
-            if(TermIdx != -1) overlap += 1;  // term exists
+            if(TermIdx != -1) overlap += 1.0;  // term exists
         }
-        return overlap / terms.length;
+        return overlap / (terms.length * 1.0);
     }
 
     /**
@@ -635,7 +636,7 @@ public class RetrievalModelLeToR extends RetrievalModel {
                     output += String.format("%d:%f ", i, 0.0);
             }
             output += String.format("# %s", extId);
-            System.out.println(output);
+//            System.out.println(output);
             writer.println(output);
         }
         writer.close();
