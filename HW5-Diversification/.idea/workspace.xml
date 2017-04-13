@@ -16,11 +16,46 @@
   <component name="ExecutionTargetManager" SELECTED_TARGET="default_target" />
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="QryEval.java" pinned="false" current-in-tab="true">
+      <file leaf-file-name="QryEval.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/QryEval.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="520">
-              <caret line="277" column="66" lean-forward="false" selection-start-line="277" selection-start-column="66" selection-end-line="277" selection-end-column="66" />
+            <state relative-caret-position="360">
+              <caret line="85" column="64" lean-forward="false" selection-start-line="85" selection-start-column="26" selection-end-line="85" selection-end-column="64" />
+              <folding>
+                <element signature="e#4692#4751#0" expanded="false" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="RetrievalModelBM25.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/RetrievalModelBM25.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="510">
+              <caret line="40" column="96" lean-forward="true" selection-start-line="22" selection-start-column="5" selection-end-line="40" selection-end-column="96" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="QryDiversification.java" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/src/QryDiversification.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="578">
+              <caret line="78" column="65" lean-forward="false" selection-start-line="78" selection-start-column="65" selection-end-line="78" selection-end-column="65" />
+              <folding>
+                <element signature="class#Entry#0;class#QryDiversification#0" expanded="false" />
+                <element signature="class#EntryComparator#0;class#QryDiversification#0" expanded="false" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="RetrievalModelLeToR.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/RetrievalModelLeToR.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="-4105">
+              <caret line="74" column="16" lean-forward="false" selection-start-line="74" selection-start-column="16" selection-end-line="74" selection-end-column="16" />
               <folding />
             </state>
           </provider>
@@ -36,7 +71,9 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
+        <option value="$PROJECT_DIR$/src/RetrievalModelBM25.java" />
         <option value="$PROJECT_DIR$/src/QryEval.java" />
+        <option value="$PROJECT_DIR$/src/QryDiversification.java" />
       </list>
     </option>
   </component>
@@ -98,6 +135,11 @@
     <property name="project.structure.last.edited" value="Modules" />
     <property name="project.structure.proportion" value="0.15" />
     <property name="project.structure.side.proportion" value="0.2" />
+  </component>
+  <component name="RecentsManager">
+    <key name="CopyClassDialog.RECENTS_KEY">
+      <recent name="" />
+    </key>
   </component>
   <component name="RunManager" selected="Application.QryEval">
     <configuration default="false" name="QryEval" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
@@ -390,11 +432,40 @@
     <option name="FILTER_TARGETS" value="false" />
   </component>
   <component name="editorHistoryManager">
+    <entry file="file://$PROJECT_DIR$/src/RetrievalModelLeToR.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-4105">
+          <caret line="74" column="16" lean-forward="false" selection-start-line="74" selection-start-column="16" selection-end-line="74" selection-end-column="16" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/RetrievalModelBM25.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="510">
+          <caret line="40" column="96" lean-forward="true" selection-start-line="22" selection-start-column="5" selection-end-line="40" selection-end-column="96" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/src/QryEval.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="520">
-          <caret line="277" column="66" lean-forward="false" selection-start-line="277" selection-start-column="66" selection-end-line="277" selection-end-column="66" />
-          <folding />
+        <state relative-caret-position="360">
+          <caret line="85" column="64" lean-forward="false" selection-start-line="85" selection-start-column="26" selection-end-line="85" selection-end-column="64" />
+          <folding>
+            <element signature="e#4692#4751#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/QryDiversification.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="578">
+          <caret line="78" column="65" lean-forward="false" selection-start-line="78" selection-start-column="65" selection-end-line="78" selection-end-column="65" />
+          <folding>
+            <element signature="class#Entry#0;class#QryDiversification#0" expanded="false" />
+            <element signature="class#EntryComparator#0;class#QryDiversification#0" expanded="false" />
+          </folding>
         </state>
       </provider>
     </entry>

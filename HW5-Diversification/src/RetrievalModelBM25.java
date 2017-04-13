@@ -28,16 +28,16 @@ public class RetrievalModelBM25 extends RetrievalModel {
                     ("Required parameters for BM25 model were missing from the parameter file.");
         }
 
-        k1 = Double.parseDouble(param.get("BM25:k_1"));
-        if(k1 < 0) throw new IllegalArgumentException
+        this.k1 = Double.parseDouble(param.get("BM25:k_1"));
+        if(this.k1 < 0) throw new IllegalArgumentException
                 ("Illegal argument: " + param.get("BM25:k_1") + ", k1 is a real number >= 0.0");
 
-        b = Double.parseDouble(param.get("BM25:b"));
-        if(b < 0 || b > 1) throw new IllegalArgumentException
+        this.b = Double.parseDouble(param.get("BM25:b"));
+        if(this.b < 0 || this.b > 1) throw new IllegalArgumentException
                 ("Illegal argument: " + param.get("BM25:b") + ", b is a real number between 0.0 and 1.0");
 
-        k3 = Double.parseDouble(param.get("BM25:k_3"));
-        if(k3 < 0) throw new IllegalArgumentException
+        this.k3 = Double.parseDouble(param.get("BM25:k_3"));
+        if(this.k3 < 0) throw new IllegalArgumentException
                 ("Illegal argument: " + param.get("BM25:k_3") + ", k3 is a real number >= 0.0");
     }
 

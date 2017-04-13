@@ -78,8 +78,12 @@ public class QryEval {
         RetrievalModelLeToR letor = (RetrievalModelLeToR) model;
         letor.learn(parameters);
     }
-    else
-        processQueryFile(parameters.get("queryFilePath"), model);
+    // if the parameter requires diversification, jump to QryDiversification class to re-rank
+    else if(parameters.containsKey("diversity") && parameters.get("diversity").equals("true")){
+        QryDiversification QryDiverse = new QryDiversification();
+        QryDiverse.run(parameters, model);
+    }
+    else processQueryFile(parameters.get("queryFilePath"), model);
 
     // Clean up.
     timer.stop();
@@ -165,9 +169,6 @@ public class QryEval {
       qString = defaultOp + "(" + qString + ")";
       Qry q = QryParser.getQuery(qString);
 
-//    // Show the query that is evaluated
-//    System.out.println("    --> " + q);
-
       if (q != null) {
           ScoreList r = new ScoreList();
 
@@ -224,7 +225,6 @@ public class QryEval {
         String qid = qLine.substring(0, d);
         String query = qLine.substring(d + 1);
         
-//        System.out.println("Query: " + query);
         ScoreList r = null;
 
         r = processQuery(Integer.parseInt(qid), query, model);
