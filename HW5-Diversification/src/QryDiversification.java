@@ -2,6 +2,8 @@
  *  Copyright(c) 2017, Carnegie Mellon University.  All Rights Reserved.
  */
 
+import javafx.beans.binding.DoubleExpression;
+
 import java.io.*;
 import java.util.*;
 
@@ -63,7 +65,7 @@ public class QryDiversification {
         if(this.lambda < 0 || this.lambda > 1) throw new IllegalArgumentException
                 (String.format("Illegal argument: %f, lambda is a real number between 0.0 and 1.0", this.lambda));
 
-        this.algorithm = param.get("diversity:algorithm");
+        this.algorithm = param.get("diversity:algorithm").toLowerCase();
         this.intentsFile = param.get("diversity:intentsFile");
         if(param.containsKey("diversity:initialRankingFile"))
             this.initRankingFile = param.get("diversity:initialRankingFile");
@@ -122,11 +124,13 @@ public class QryDiversification {
             if(!id.equals(currId)) {  // finish caching for a query/intent ranking
                 if(currId != "-1") {
                     if(currId.contains(".")) {     // this is a query intent ranking
-                        String qid = currId.substring(0, currId.indexOf("."));
+                        int d = currId.indexOf(".");
+                        String qid = currId.substring(0, d);
+                        String intentId = currId.substring(d + 1);
                         if(!this.QryIntents.containsKey(qid))
                             this.QryIntents.put(qid, new ArrayList<>());
-                        this.QryIntents.get(qid).add(currId);
-                        this.initIntentRanking.put(currId, r);
+                        this.QryIntents.get(qid).add(intentId);
+                        this.initIntentRanking.put(intentId, r);
                     } else              // this is an query ranking
                         this.initQryRanking.put(currId, r);
                 }
@@ -148,11 +152,13 @@ public class QryDiversification {
 
         if(currId != "-1"){
             if(currId.contains(".")) {     // this is a query intent ranking
-                String qid = currId.substring(0, currId.indexOf("."));
+                int d = currId.indexOf(".");
+                String qid = currId.substring(0, d);
+                String intentId = currId.substring(d + 1);
                 if(!this.QryIntents.containsKey(qid))
                     this.QryIntents.put(qid, new ArrayList<>());
-                this.QryIntents.get(qid).add(currId);
-                this.initIntentRanking.put(currId, r);
+                this.QryIntents.get(qid).add(intentId);
+                this.initIntentRanking.put(intentId, r);
             } else              // this is an query ranking
                 this.initQryRanking.put(currId, r);
         }
@@ -180,9 +186,10 @@ public class QryDiversification {
         do {
             line = scan.nextLine();
             String[] tuple = line.split(":");
-            String intentId = tuple[0].trim();
-            String qid = intentId.substring(0, intentId.indexOf("."));
-            System.out.println(qid);
+            String id = tuple[0].trim();
+            int d = id.indexOf(".");
+            String qid = id.substring(0, d);
+            String intentId = id.substring(d + 1);
             if(!this.QryIntents.containsKey(qid))
                 this.QryIntents.put(qid, new ArrayList<>());
             this.QryIntents.get(qid).add(intentId);
@@ -220,7 +227,7 @@ public class QryDiversification {
                 String query = qLine.substring(d + 1);
 
                 // fetch the rankings for query and its intents
-                ScoreList qryScore = new ScoreList();   // initial ranking for a query
+                ScoreList qryScore;   // initial ranking for a query
                 HashMap<String, ScoreList> intentScores = new HashMap<>(); // initial rankings for intents
                 ArrayList<String> intents = this.QryIntents.get(qid);
 
@@ -254,10 +261,28 @@ public class QryDiversification {
                     }
                 }
 
-                // perform diversified ranking
-                ScoreList r = diversifiedRanking(qryScore, intentScores);
-                r.sort();
+                // perform scaling on document scores
+                ArrayList<ArrayList<Double>> scores = scaling(qryScore, intentScores);
 
+                // docid at rank i of this query
+                HashMap<Integer, Integer> docidAtRank = new HashMap<>();
+                for(int i = 0; i < qryScore.size(); i++)
+                    docidAtRank.put(i, qryScore.getDocid(i));
+
+                // perform diversified ranking
+                ScoreList r;
+                switch (this.algorithm){
+                    case "pm2":
+                        r = PM2(scores, docidAtRank);
+                        break;
+                    case "xquad":
+                        r = xQuAD(scores, docidAtRank);
+                        break;
+                    default:
+                        throw new IllegalArgumentException
+                                ("Unknown diversification algirithm " + this.algorithm);
+                }
+                r.sort();
                 if(r != null) {
                     QryEval.printResults(qid, r);
                 }
@@ -272,22 +297,88 @@ public class QryDiversification {
     }
 
     /**
-     * Perform diversification and re-ranking.
+     * Perform scaling on all rankings.
      * @param qryScore initial ranking for the query.
      * @param intentScores initial rankings for the query intents.
+     * @return arraylist of the scores of query and corresponding intents.
+     * @throws IOException Error accessing the index
+     */
+    public ArrayList<ArrayList<Double>> scaling(ScoreList qryScore, HashMap<String, ScoreList> intentScores) {
+
+        // A list to store query score and corresponding intents' scores
+        ArrayList<ArrayList<Double>> scores = new ArrayList<>();
+        int numOfIntents = intentScores.size();
+        HashMap<Integer, Integer> rankOfDocid = new HashMap<>();
+
+        for(int i = 0; i < qryScore.size() && i < this.inputRankingLen; i++){
+            rankOfDocid.put(qryScore.getDocid(i), i);
+            ArrayList<Double> arr = new ArrayList<>(Collections.nCopies(numOfIntents + 1, 0.0));
+            arr.set(0, qryScore.getDocidScore(i));
+            scores.add(arr);
+        }
+
+        for(String i: intentScores.keySet()){
+            ScoreList s = intentScores.get(i);
+            for(int j = 0; j < s.size(); j++){
+                int docid = s.getDocid(j);
+                if(rankOfDocid.containsKey(docid)){
+                    int index = rankOfDocid.get(docid);
+                    scores.get(index).set(Integer.parseInt(i), s.getDocidScore(j));
+                }
+            }
+        }
+
+        // find maximal sum of scores across rankings
+        ArrayList<Double> sumOfScores = new ArrayList<>(Collections.nCopies(numOfIntents + 1, 0.0));
+        for(int i = 0; i < scores.size(); i++) {
+            ArrayList<Double> qry = scores.get(i);
+            System.out.print(i + " ");
+            for(int j = 0; j < qry.size(); j++){
+                sumOfScores.set(j, sumOfScores.get(j) + qry.get(j));
+                System.out.print(scores.get(i).get(j) + " ");
+            }
+            System.out.println();
+        }
+
+        // scalar to perform scaling [0.0 1.0] on all rankings
+        double scalar = Collections.max(sumOfScores);
+        for(int i = 0; i < scores.size(); i++) {
+            System.out.print(i + " ");
+            for(int j = 0; j < numOfIntents + 1; j++){
+                scores.get(i).set(j, scores.get(i).get(j) / scalar);
+                System.out.print(scores.get(i).get(j) + " ");
+            }
+            System.out.println();
+        }
+        return scores;
+    }
+
+    /**
+     * Perform diversification and re-ranking using xQuAD.
+     * @param scores scores of query and corresponding intents.
+     * @param docidAtRank docid at rank i of this query.
      * @return score list of the diversified ranking.
      * @throws IOException Error accessing the index
      */
-    public ScoreList diversifiedRanking(ScoreList qryScore, HashMap<String, ScoreList> intentScores){
+    public ScoreList xQuAD(ArrayList<ArrayList<Double>> scores, HashMap<Integer, Integer> docidAtRank){
         ScoreList r = new ScoreList();
-
-        // perform scaling on document scores
-
-        // apply diversification algorithm for re-ranking
 
         return r;
     }
 
+    /**
+     * Perform diversification and re-ranking using PM2.
+     * @param scores scores of query and corresponding intents.
+     * @param docidAtRank docid at rank i of this query.
+     * @return score list of the diversified ranking.
+     * @throws IOException Error accessing the index
+     */
+    public ScoreList PM2(ArrayList<ArrayList<Double>> scores, HashMap<Integer, Integer> docidAtRank){
+        ScoreList r = new ScoreList();
+
+
+        return r;
+    }
 
 
 
