@@ -90,6 +90,8 @@ public class QryDiversification {
             cacheIntents();   // fetch intents from file
 
         processQueryFile(parameters.get("queryFilePath"), model);
+
+        // unitTest_xQuAD();
     }
 
     /**
@@ -332,23 +334,23 @@ public class QryDiversification {
         ArrayList<Double> sumOfScores = new ArrayList<>(Collections.nCopies(numOfIntents + 1, 0.0));
         for(int i = 0; i < scores.size(); i++) {
             ArrayList<Double> qry = scores.get(i);
-            System.out.print(i + " ");
+//            System.out.print(i + " ");
             for(int j = 0; j < qry.size(); j++){
                 sumOfScores.set(j, sumOfScores.get(j) + qry.get(j));
-                System.out.print(scores.get(i).get(j) + " ");
+//                System.out.print(scores.get(i).get(j) + " ");
             }
-            System.out.println();
+//            System.out.println();
         }
 
         // scalar to perform scaling [0.0 1.0] on all rankings
         double scalar = Collections.max(sumOfScores);
         for(int i = 0; i < scores.size(); i++) {
-            System.out.print(i + " ");
+//            System.out.print(i + " ");
             for(int j = 0; j < numOfIntents + 1; j++){
                 scores.get(i).set(j, scores.get(i).get(j) / scalar);
-                System.out.print(scores.get(i).get(j) + " ");
+//                System.out.print(scores.get(i).get(j) + " ");
             }
-            System.out.println();
+//            System.out.println();
         }
         return scores;
     }
@@ -356,12 +358,51 @@ public class QryDiversification {
     /**
      * Perform diversification and re-ranking using xQuAD.
      * @param scores scores of query and corresponding intents.
-     * @param docidAtRank docid at rank i of this query.
      * @return score list of the diversified ranking.
      * @throws IOException Error accessing the index
      */
     public ScoreList xQuAD(ArrayList<ArrayList<Double>> scores, HashMap<Integer, Integer> docidAtRank){
         ScoreList r = new ScoreList();
+        int numOfIntents = scores.get(0).size() - 1;
+        double w = 1.0 / numOfIntents;     // intent weight (assume uniform)
+
+        HashSet<Integer> candidates = new HashSet<>();   // candidate documents
+        for(int i = 0; i < scores.size(); i++)
+            candidates.add(i);
+
+        // score representing how well the selected set already covers each intent
+        ArrayList<Double> coverageScore = new ArrayList<>(Collections.nCopies(numOfIntents + 1, 1.0));
+
+        this.resultRankingLen = 5;
+
+        // selection progress
+        while(r.size() < this.resultRankingLen){
+
+            int winner = -1;     // selected document id for current rank
+            double maxScore = -Double.MAX_VALUE;
+
+            // compute score for each candidate
+            for(int i: candidates){
+                ArrayList<Double> qryScore = scores.get(i);
+                double diversityScore = 0.0;
+                for(int j = 1; j <= numOfIntents; j++)
+                    diversityScore += qryScore.get(j) * coverageScore.get(j);
+                diversityScore *= w;
+                double s = (1 - this.lambda) * qryScore.get(0) + this.lambda * diversityScore;
+
+                if(maxScore < s){   // update document with maximal score
+                    maxScore = s;
+                    winner = i;
+                }
+            }
+
+            // finalize the winner for this round, remove from candidates set
+            candidates.remove(winner);
+            r.add(docidAtRank.get(winner), maxScore);
+//            System.out.println(String.format("id: %d, score: %f", winner + 1, maxScore));
+            for(int i = 1; i <= numOfIntents; i++)
+                coverageScore.set(i, coverageScore.get(i) * (1.0 - scores.get(winner).get(i)));
+        }
 
         return r;
     }
@@ -369,7 +410,6 @@ public class QryDiversification {
     /**
      * Perform diversification and re-ranking using PM2.
      * @param scores scores of query and corresponding intents.
-     * @param docidAtRank docid at rank i of this query.
      * @return score list of the diversified ranking.
      * @throws IOException Error accessing the index
      */
@@ -380,7 +420,21 @@ public class QryDiversification {
         return r;
     }
 
-
-
+//    public void unitTest_xQuAD(){
+//        ArrayList<ArrayList<Double>> scores = new ArrayList<>();
+//        ArrayList<Double> a = new ArrayList(Arrays.asList(0.7, 0.7, 0.2));
+//        scores.add(a);
+//        a = new ArrayList(Arrays.asList(0.69, 0.8, 0.1));
+//        scores.add(a);
+//        a = new ArrayList(Arrays.asList(0.68, 0.6, 0.3));
+//        scores.add(a);
+//        a = new ArrayList(Arrays.asList(0.67, 0.2, 0.7));
+//        scores.add(a);
+//        a = new ArrayList(Arrays.asList(0.66, 0.3, 0.8));
+//        scores.add(a);
+//
+//        ScoreList r = xQuAD(scores);
+//    }
+    
 }
 
