@@ -11,9 +11,12 @@ import java.util.*;
 public class QryDiversification {
 
     private double lambda;
-    private String algorithm, intentsFile, initRankingFile;
+    private String algorithm, intentsFile, initRankingFile = "";
     private int inputRankingLen, resultRankingLen;
     private RetrievalModel model;
+    private HashMap<String, ScoreList> initQryRanking, initIntentRanking;
+    private HashMap<String, ArrayList<String>> QryIntents;
+    private HashMap<String, String> intentBody;
 
     // A utility class to create a <term, score> object.
     private class Entry {
@@ -50,7 +53,6 @@ public class QryDiversification {
         if(!(param.containsKey("diversity:lambda") &&
                 param.containsKey("diversity:algorithm") &&
                 param.containsKey("diversity:intentsFile") &&
-                param.containsKey("diversity:initialRankingFile") &&
                 param.containsKey("diversity:maxInputRankingsLength") &&
                 param.containsKey("diversity:maxResultRankingsLength"))) {
             throw new IllegalArgumentException
@@ -63,7 +65,8 @@ public class QryDiversification {
 
         this.algorithm = param.get("diversity:algorithm");
         this.intentsFile = param.get("diversity:intentsFile");
-        this.initRankingFile = param.get("diversity:initialRankingFile");
+        if(param.containsKey("diversity:initialRankingFile"))
+            this.initRankingFile = param.get("diversity:initialRankingFile");
 
         this.inputRankingLen = Integer.parseInt(param.get("diversity:maxInputRankingsLength"));
         if(this.inputRankingLen < 0) throw new IllegalArgumentException
@@ -74,12 +77,120 @@ public class QryDiversification {
                 (String.format("Illegal argument: %d, maxResultRankingsLength is an integer > 0", this.resultRankingLen));
     }
 
-    public void run(Map<String, String> parameters, RetrievalModel model) throws IOException {
+
+    public void run(Map<String, String> parameters, RetrievalModel model) throws Exception {
         initialize(parameters, model);
+
+        // check whether the initial ranking files and intents have been provided
+        if(!this.initRankingFile.equals(""))
+            cacheInitialRankings();
+        else
+            cacheIntents();   // fetch intents from file
+
         processQueryFile(parameters.get("queryFilePath"), model);
-        return;
     }
 
+    /**
+     *  read the relevance docs from file and cache in memory.
+     *  @throws Exception Error accessing the Lucene index.
+     */
+    public void cacheInitialRankings() throws Exception {
+        this.initQryRanking = new HashMap<>();
+        this.initIntentRanking = new HashMap<>();
+        this.QryIntents = new HashMap<>();
+
+        String file = this.initRankingFile;
+        File initRanking = new File(file);
+        if(!initRanking.canRead()) {
+            throw new IllegalArgumentException
+                    ("Can't read " + file);
+        }
+
+        Scanner scan = new Scanner(initRanking);
+        String line = null;
+
+        String currId = "-1";   // initialize query/intent id
+        ScoreList r = new ScoreList();
+        HashSet<Integer> relDocs = new HashSet<>();  // relevant documents of a query
+        do {
+            line = scan.nextLine();
+            String[] tuple = line.split(" ");
+            String id = tuple[0].trim();
+            boolean isIntent = id.contains(".");
+            int docid = Idx.getInternalDocid(tuple[2].trim());
+
+            if(!id.equals(currId)) {  // finish caching for a query/intent ranking
+                if(currId != "-1") {
+                    if(currId.contains(".")) {     // this is a query intent ranking
+                        String qid = currId.substring(0, currId.indexOf("."));
+                        if(!this.QryIntents.containsKey(qid))
+                            this.QryIntents.put(qid, new ArrayList<>());
+                        this.QryIntents.get(qid).add(currId);
+                        this.initIntentRanking.put(currId, r);
+                    } else              // this is an query ranking
+                        this.initQryRanking.put(currId, r);
+                }
+                currId = id;
+                r = new ScoreList();
+            }
+            if(isIntent){
+                // check whether the document shows up in the initial ranking of the query
+                if(relDocs.contains(docid))
+                    r.add(docid, Double.parseDouble(tuple[4].trim()));
+            }
+            else{
+                if(r.size() == 0)     // a new query
+                    relDocs = new HashSet<>();    // reinitialize the set
+                r.add(docid, Double.parseDouble(tuple[4].trim()));
+                relDocs.add(docid);   // record the relevant documents
+            }
+        } while(scan.hasNext());
+
+        if(currId != "-1"){
+            if(currId.contains(".")) {     // this is a query intent ranking
+                String qid = currId.substring(0, currId.indexOf("."));
+                if(!this.QryIntents.containsKey(qid))
+                    this.QryIntents.put(qid, new ArrayList<>());
+                this.QryIntents.get(qid).add(currId);
+                this.initIntentRanking.put(currId, r);
+            } else              // this is an query ranking
+                this.initQryRanking.put(currId, r);
+        }
+        scan.close();
+    }
+
+    /**
+     *  read the intents from file and cache in memory.
+     *  @throws Exception Error accessing the Lucene index.
+     */
+    public void cacheIntents() throws Exception {
+        this.QryIntents = new HashMap<>();
+        this.intentBody = new HashMap<>();
+
+        String file = this.intentsFile;
+        File intents = new File(file);
+        if(!intents.canRead()) {
+            throw new IllegalArgumentException
+                    ("Can't read " + file);
+        }
+
+        Scanner scan = new Scanner(intents);
+        String line = null;
+
+        do {
+            line = scan.nextLine();
+            String[] tuple = line.split(":");
+            String intentId = tuple[0].trim();
+            String qid = intentId.substring(0, intentId.indexOf("."));
+            System.out.println(qid);
+            if(!this.QryIntents.containsKey(qid))
+                this.QryIntents.put(qid, new ArrayList<>());
+            this.QryIntents.get(qid).add(intentId);
+            this.intentBody.put(intentId, tuple[1].trim());
+        } while(scan.hasNext());
+
+        scan.close();
+    }
 
     /**
      *  Process the query file.
@@ -87,7 +198,7 @@ public class QryDiversification {
      *  @param model
      *  @throws IOException Error accessing the Lucene index.
      */
-    static void processQueryFile(String queryFilePath, RetrievalModel model)
+    public void processQueryFile(String queryFilePath, RetrievalModel model)
             throws IOException {
 
         BufferedReader input = null;
@@ -105,17 +216,50 @@ public class QryDiversification {
                             ("Syntax error:  Missing ':' in query line.");
                 }
 
-                // printMemoryUsage(false);
                 String qid = qLine.substring(0, d);
                 String query = qLine.substring(d + 1);
 
-                ScoreList r = null;
+                // fetch the rankings for query and its intents
+                ScoreList qryScore = new ScoreList();   // initial ranking for a query
+                HashMap<String, ScoreList> intentScores = new HashMap<>(); // initial rankings for intents
+                ArrayList<String> intents = this.QryIntents.get(qid);
 
-                r = processQuery(Integer.parseInt(qid), query, model);
+                // check whether the initial ranking files and intents have been provided
+                if(!this.initRankingFile.equals("")){
+                    qryScore = this.initQryRanking.get(qid);
+                    for(int i = 0; i < intents.size(); i++){
+                        String intent = intents.get(i);
+                        intentScores.put(intent, this.initIntentRanking.get(intent));
+                    }
+                }
+                else{
+                    qryScore = QryEval.processQuery(Integer.parseInt(qid), query, model);
+                    HashSet<Integer> relDocs = new HashSet<>();  // relevant documents of a query
+                    for(int i = 0; i < qryScore.size(); i++)
+                        relDocs.add(qryScore.getDocid(i));
+
+                    for(int i = 0; i < intents.size(); i++){
+                        String intent = intents.get(i);
+                        String body = this.intentBody.get(intent);
+                        ScoreList initial = QryEval.processQuery(0, body, model);
+
+                        // eliminate those which doesn't show up in query ranking
+                        ScoreList s = new ScoreList();
+                        for(int j = 0; j < initial.size(); j++){
+                            int docid = initial.getDocid(j);
+                            if(relDocs.contains(docid))
+                                s.add(docid, initial.getDocidScore(j));
+                        }
+                        intentScores.put(intent, s);
+                    }
+                }
+
+                // perform diversified ranking
+                ScoreList r = diversifiedRanking(qryScore, intentScores);
                 r.sort();
 
                 if(r != null) {
-                    printResults(qid, r);
+                    QryEval.printResults(qid, r);
                 }
             }
         }
@@ -128,215 +272,24 @@ public class QryDiversification {
     }
 
     /**
-     * Process one query.
-     * @param qString A string that contains a query.
-     * @param model The retrieval model determines how matching and scoring is done.
-     * @return Search results
+     * Perform diversification and re-ranking.
+     * @param qryScore initial ranking for the query.
+     * @param intentScores initial rankings for the query intents.
+     * @return score list of the diversified ranking.
      * @throws IOException Error accessing the index
      */
-    static ScoreList processQuery(int qid, String qString, RetrievalModel model) throws IOException {
+    public ScoreList diversifiedRanking(ScoreList qryScore, HashMap<String, ScoreList> intentScores){
+        ScoreList r = new ScoreList();
 
-        String defaultOp = model.defaultQrySopName();
-        qString = defaultOp + "(" + qString + ")";
-        Qry q = QryParser.getQuery(qString);
+        // perform scaling on document scores
 
-        if (q != null) {
-            ScoreList r = new ScoreList();
+        // apply diversification algorithm for re-ranking
 
-            if (q.args.size() > 0) {        // Ignore empty queries
-
-                if (model instanceof RetrievalModelIndri) {
-                    RetrievalModelIndri Indri = (RetrievalModelIndri) model;
-                    if(Indri.getFilePath("fb").equals("true")) {
-                        QryExpansion QryExp = new QryExpansion();
-                        return QryExp.getScoreList(qid, q, qString, Indri);
-                    }
-                }
-
-                q.initialize(model);
-
-                while (q.docIteratorHasMatch(model)) {
-                    int docid = q.docIteratorGetMatch();
-                    double score = ((QrySop) q).getScore(model);
-//                System.out.println(docid + ": " + score);
-                    r.add(docid, score);
-                    q.docIteratorAdvancePast(docid);
-                }
-            }
-            return r;
-        } else
-            return null;
+        return r;
     }
 
 
-  public ScoreList getScoreList(int qid, Qry q, String originalQuery, RetrievalModelIndri model) throws IOException {
 
-      // initialize parameter
-      initialize(model, qid);
-
-      if (!model.getFilePath("fbInitialRankingFile").equals("")) {
-          this.r = model.getInitialRanking(this.qid);
-          //System.out.println(model.getFilePath("fbInitialRankingFile"));
-      } else {
-          this.r = new ScoreList();
-          q.initialize(model);
-
-          while (q.docIteratorHasMatch(model)) {
-              int docid = q.docIteratorGetMatch();
-              double score = ((QrySop) q).getScore(model);
-              this.r.add(docid, score);
-              q.docIteratorAdvancePast(docid);
-          }
-      }
-      this.r.sort();
-
-      /* extract all candidate terms */
-      Set<String> candidates = findCandidates();
-
-      // Compute score for each candidate term
-      PriorityQueue<Entry> pq = new PriorityQueue<>(new EntryComparator());
-
-//      int i = 0, size = candidates.size();
-      for (String term : candidates) {
-          double termScore = computeScore(term);
-          pq.add(new Entry(term, termScore));
-//          System.out.println(String.format("Term %d out of %d", i++, size));
-          if (pq.size() > this.fbTerms) pq.poll();
-      }
-
-      // expand the query
-      String learnedQuery = "#wand(";
-      while (pq.size() > 0) {
-          Entry temp = pq.poll();
-          learnedQuery += String.format(" %f %s", temp.getValue(), temp.getKey());
-      }
-      learnedQuery += ")";
-
-//      // fetch learned query from previous generated file to speed up for experiment 3/4/5
-//      String learnedQuery = this.queries.get(qid);
-//      return processQuery(learnedQuery);
-
-      // write the expanded query to a file
-      if(!this.outputPath.equals(""))
-          writeFile(learnedQuery);
-
-      // rewrite the query by combining the expanded query with the original one
-      double originWeight = model.getParam("fbOrigWeight");
-      String expandedQuery = String.format("#wand(%f %s %f %s)", originWeight, originalQuery, 1 - originWeight, learnedQuery);
-
-      // run the expanded query to retrieve documents
-      return processQuery(expandedQuery);
-  }
-
-    /**
-     * write the query to file along with its id.
-     * @param s A string that contains a query.
-     * @throws IOException Error accessing the index
-     */
-    public void writeFile(String s) throws IOException{
-        PrintWriter writer = new PrintWriter(new FileWriter(this.outputPath, true));
-        writer.println(String.format("%d: %s", this.qid, s));
-        writer.close();
-    }
-
-    /**
-     * retrieve all the terms in the top K documents.
-     * @return A set containing all the candidate terms.
-     * @throws IOException Error accessing the index
-     */
-    public Set<String> findCandidates() throws IOException{
-        Set<String> candidates = new HashSet<>();
-        for (int i = 0; i < this.fbDocs; i++) {
-            TermVector vec = new TermVector(this.r.getDocid(i), "body");
-            int numTerms = vec.stemsLength();
-
-            for (int k = 1; k < numTerms; k++) {
-                String term = vec.stemString(k);
-                if (!term.contains("."))   // terms having "." may confuse the parser
-                    candidates.add(term);
-            }
-        }
-        return candidates;
-    }
-
-    /**
-     * Process one query.
-     * @param qString A string that contains a query.
-     * @return Search results
-     * @throws IOException Error accessing the index
-     */
-    public ScoreList processQuery(String qString) throws IOException {
-
-        String defaultOp = this.model.defaultQrySopName();
-        qString = defaultOp + "(" + qString + ")";
-        Qry q = QryParser.getQuery(qString);
-
-        if (q != null) {
-            ScoreList s = new ScoreList();
-
-            if (q.args.size() > 0) {        // Ignore empty queries
-
-                q.initialize(this.model);
-
-                while (q.docIteratorHasMatch(this.model)) {
-                    int docid = q.docIteratorGetMatch();
-                    double score = ((QrySop) q).getScore(this.model);
-                    s.add(docid, score);
-                    q.docIteratorAdvancePast(docid);
-                }
-            }
-            return s;
-        }
-        else return null;
-    }
-
-    /**
-     * compute the term score (with idf effect) of all top K documents.
-     * @param term target candidate term.
-     * @return the term score (with idf effect) of all top K documents.
-     * @throws IOException Error accessing the index
-     */
-    public double computeScore(String term) throws IOException{
-        double score = 0.0;
-
-        // a form of idf to penalize frequent terms
-        double ctf = Idx.getTotalTermFreq(this.field, term);
-        double p = ctf / this.lenCorpus;      // MLE of Prob(term in the collection)
-        double idf = Math.log(this.lenCorpus / ctf);
-
-        for(int i = 0; i < this.fbDocs; i++){
-
-            // Indri score for the original query for this document
-            int docid = this.r.getDocid(i);
-            double docScore = this.r.getDocidScore(i);
-            TermVector vec = new TermVector(docid, this.field);
-
-            // score for the candidate term conditioned on this document
-            int idx = vec.indexOfStem(term);   // index of the term in this document
-            double tf = (idx == -1? 0.0: vec.stemFreq(idx));
-            double docLen = Idx.getFieldLength(this.field, docid);
-            docScore *= (tf + this.fbMu * p) / (docLen + this.fbMu);
-            //System.out.println(String.format("score for %s in doc %d: %f", term, i, docScore));
-
-            score += docScore;
-        }
-        return score * idf;
-    }
-
-//    /**
-//     *  Sort a HashMap by its value.
-//     */
-//  public List sortByValue(HashMap<String, Double> map){
-//      List list = new ArrayList(map.entrySet());
-//
-//      Collections.sort(list, new Comparator<Map.Entry>(){
-//          public int compare(Map.Entry a, Map.Entry b){
-//              return ((Comparable)(b).getValue()).compareTo((a).getValue());
-//          }
-//      });
-//
-//      return list;
-//  }
 
 }
 

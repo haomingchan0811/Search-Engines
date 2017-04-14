@@ -11,6 +11,5 @@ diversity=true
 diversity:lambda=0.5
 diversity:algorithm=PM2
 diversity:intentsFile=q.intents
-diversity:initialRankingFile=init.teIn
 diversity:maxInputRankingsLength=100
 diversity:maxResultRankingsLength=50

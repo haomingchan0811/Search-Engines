@@ -61,11 +61,14 @@ public class QryEval {
 //    for(Map.Entry item: parameters.entrySet()){
 //        System.out.println(item.getKey());
 //    }
+
     outputPath = parameters.get("trecEvalOutputPath");
     
     // update the customized outputLength (default: 100) 
     if(parameters.containsKey("trecEvalOutputLength"))
         outputLength = Integer.parseInt(parameters.get("trecEvalOutputLength"));
+    else if(parameters.containsKey("diversity:maxResultRankingsLength"))
+        outputLength = Integer.parseInt(parameters.get("diversity:maxResultRankingsLength"));
     
     // Open the index and initialize the retrieval model.
     Idx.open(parameters.get("indexPath"));
@@ -255,7 +258,7 @@ public class QryEval {
    * @throws IOException Error accessing the Lucene index.
    */
   static void printResults(String queryId, ScoreList result) throws IOException {
-    
+
 	PrintWriter writer = new PrintWriter(new FileWriter(outputPath, true));
 	
 	// Prefix of query id and fixed constant Q0
