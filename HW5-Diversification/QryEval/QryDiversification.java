@@ -15,7 +15,8 @@ public class QryDiversification {
     private double lambda;
     private String algorithm, intentsFile = "", initRankingFile = "";
     private int inputRankingLen, resultRankingLen;
-    private HashMap<String, ScoreList> initQryRanking, initIntentRanking;
+    private HashMap<String, ScoreList> initQryRanking;
+    private HashMap<String, HashMap<String, ScoreList>> initIntentRanking;
     private HashMap<String, ArrayList<String>> QryIntents;
     private HashMap<String, ArrayList<String>> intentBody;
 
@@ -98,10 +99,14 @@ public class QryDiversification {
                         int d = currId.indexOf(".");
                         String qid = currId.substring(0, d);
                         String intentId = currId.substring(d + 1);
-                        if(!this.QryIntents.containsKey(qid))
+
+                        if(!this.QryIntents.containsKey(qid)) {
                             this.QryIntents.put(qid, new ArrayList<>());
+                            this.initIntentRanking.put(qid, new HashMap<>());
+                        }
+
                         this.QryIntents.get(qid).add(intentId);
-                        this.initIntentRanking.put(intentId, r);
+                        this.initIntentRanking.get(qid).put(intentId, r);
                     } else              // this is an query ranking
                         this.initQryRanking.put(currId, r);
                 }
@@ -126,10 +131,14 @@ public class QryDiversification {
                 int d = currId.indexOf(".");
                 String qid = currId.substring(0, d);
                 String intentId = currId.substring(d + 1);
-                if(!this.QryIntents.containsKey(qid))
+
+                if(!this.QryIntents.containsKey(qid)) {
                     this.QryIntents.put(qid, new ArrayList<>());
+                    this.initIntentRanking.put(qid, new HashMap<>());
+                }
+
                 this.QryIntents.get(qid).add(intentId);
-                this.initIntentRanking.put(intentId, r);
+                this.initIntentRanking.get(qid).put(intentId, r);
             } else              // this is an query ranking
                 this.initQryRanking.put(currId, r);
         }
@@ -208,10 +217,11 @@ public class QryDiversification {
                 // check whether the initial ranking files and intents have been provided
                 if(!this.initRankingFile.equals("")){
                     qryScore = this.initQryRanking.get(qid);
-                    for(int i = 0; i < intents.size(); i++){
-                        String intent = intents.get(i);
-                        intentScores.put(intent, this.initIntentRanking.get(intent));
-                    }
+                    intentScores = this.initIntentRanking.get(qid);
+//                    for(int i = 0; i < intents.size(); i++){
+//                        String intent = intents.get(i);
+//                        intentScores.put(intent, .get(intent));
+//                    }
                 }
                 else{
                     qryScore = QryEval.processQuery(Integer.parseInt(qid), query, model);

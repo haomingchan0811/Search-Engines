@@ -16,7 +16,7 @@
   <component name="ExecutionTargetManager" SELECTED_TARGET="default_target" />
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="QryEval.java" pinned="false" current-in-tab="true">
+      <file leaf-file-name="QryEval.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/QryEval.java">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="1973">
@@ -29,11 +29,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="QryDiversification.java" pinned="false" current-in-tab="false">
+      <file leaf-file-name="QryDiversification.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/QryDiversification.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="410">
-              <caret line="327" column="77" lean-forward="true" selection-start-line="327" selection-start-column="77" selection-end-line="327" selection-end-column="77" />
+            <state relative-caret-position="460">
+              <caret line="403" column="24" lean-forward="true" selection-start-line="403" selection-start-column="24" selection-end-line="403" selection-end-column="24" />
               <folding>
                 <element signature="imports" expanded="true" />
                 <element signature="docComment;method#cacheInitialRankings#0;class#QryDiversification#0" expanded="false" />
@@ -126,8 +126,8 @@
     <option name="CHANGED_PATHS">
       <list>
         <option value="$PROJECT_DIR$/src/RetrievalModelBM25.java" />
-        <option value="$PROJECT_DIR$/src/QryDiversification.java" />
         <option value="$PROJECT_DIR$/src/QryEval.java" />
+        <option value="$PROJECT_DIR$/src/QryDiversification.java" />
       </list>
     </option>
   </component>
@@ -549,19 +549,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/QryDiversification.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="410">
-          <caret line="327" column="77" lean-forward="true" selection-start-line="327" selection-start-column="77" selection-end-line="327" selection-end-column="77" />
-          <folding>
-            <element signature="imports" expanded="true" />
-            <element signature="docComment;method#cacheInitialRankings#0;class#QryDiversification#0" expanded="false" />
-            <element signature="docComment;method#cacheIntents#0;class#QryDiversification#0" expanded="false" />
-            <element signature="docComment;method#processQueryFile#0;class#QryDiversification#0" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/QryEval.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="1973">
@@ -569,6 +556,19 @@
           <folding>
             <element signature="e#4981#5040#0" expanded="false" />
             <element signature="docComment;method#readParameterFile#0;class#QryEval#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/QryDiversification.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="460">
+          <caret line="403" column="24" lean-forward="true" selection-start-line="403" selection-start-column="24" selection-end-line="403" selection-end-column="24" />
+          <folding>
+            <element signature="imports" expanded="true" />
+            <element signature="docComment;method#cacheInitialRankings#0;class#QryDiversification#0" expanded="false" />
+            <element signature="docComment;method#cacheIntents#0;class#QryDiversification#0" expanded="false" />
+            <element signature="docComment;method#processQueryFile#0;class#QryDiversification#0" expanded="false" />
           </folding>
         </state>
       </provider>

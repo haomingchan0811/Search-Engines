@@ -15,7 +15,8 @@ public class QryDiversification {
     private double lambda;
     private String algorithm, intentsFile = "", initRankingFile = "";
     private int inputRankingLen, resultRankingLen;
-    private HashMap<String, ScoreList> initQryRanking, initIntentRanking;
+    private HashMap<String, ScoreList> initQryRanking;
+    private HashMap<String, HashMap<String, ScoreList>> initIntentRanking;
     private HashMap<String, ArrayList<String>> QryIntents;
     private HashMap<String, ArrayList<String>> intentBody;
 
@@ -84,12 +85,10 @@ public class QryDiversification {
 
         String currId = "-1";   // initialize query/intent id
         ScoreList r = new ScoreList();
-//        HashSet<Integer> relDocs = new HashSet<>();  // relevant documents of a query
         do {
             line = scan.nextLine();
             String[] tuple = line.split(" ");
             String id = tuple[0].trim();
-            boolean isIntent = id.contains(".");
             int docid = Idx.getInternalDocid(tuple[2].trim());
 
             if(!id.equals(currId)) {  // finish caching for a query/intent ranking
@@ -98,27 +97,22 @@ public class QryDiversification {
                         int d = currId.indexOf(".");
                         String qid = currId.substring(0, d);
                         String intentId = currId.substring(d + 1);
-                        if(!this.QryIntents.containsKey(qid))
+
+                        if(!this.QryIntents.containsKey(qid)) {
                             this.QryIntents.put(qid, new ArrayList<>());
+                            this.initIntentRanking.put(qid, new HashMap<>());
+                        }
+
                         this.QryIntents.get(qid).add(intentId);
-                        this.initIntentRanking.put(intentId, r);
+                        this.initIntentRanking.get(qid).put(intentId, r);
                     } else              // this is an query ranking
                         this.initQryRanking.put(currId, r);
                 }
                 currId = id;
                 r = new ScoreList();
             }
-            if(isIntent){
-                // check whether the document shows up in the initial ranking of the query
-//                if(relDocs.contains(docid))
-                r.add(docid, Double.parseDouble(tuple[4].trim()));
-            }
-            else{
-//                if(r.size() == 0)     // a new query
-//                    relDocs = new HashSet<>();    // reinitialize the set
-                r.add(docid, Double.parseDouble(tuple[4].trim()));
-//                relDocs.add(docid);   // record the relevant documents
-            }
+            r.add(docid, Double.parseDouble(tuple[4].trim()));
+
         } while(scan.hasNext());
 
         if(currId != "-1"){
@@ -126,10 +120,14 @@ public class QryDiversification {
                 int d = currId.indexOf(".");
                 String qid = currId.substring(0, d);
                 String intentId = currId.substring(d + 1);
-                if(!this.QryIntents.containsKey(qid))
+
+                if(!this.QryIntents.containsKey(qid)) {
                     this.QryIntents.put(qid, new ArrayList<>());
+                    this.initIntentRanking.put(qid, new HashMap<>());
+                }
+
                 this.QryIntents.get(qid).add(intentId);
-                this.initIntentRanking.put(intentId, r);
+                this.initIntentRanking.get(qid).put(intentId, r);
             } else              // this is an query ranking
                 this.initQryRanking.put(currId, r);
         }
@@ -208,37 +206,18 @@ public class QryDiversification {
                 // check whether the initial ranking files and intents have been provided
                 if(!this.initRankingFile.equals("")){
                     qryScore = this.initQryRanking.get(qid);
-                    for(int i = 0; i < intents.size(); i++){
-                        String intent = intents.get(i);
-                        intentScores.put(intent, this.initIntentRanking.get(intent));
-                    }
+                    intentScores = this.initIntentRanking.get(qid);
                 }
                 else{
                     qryScore = QryEval.processQuery(Integer.parseInt(qid), query, model);
                     qryScore.sort();
-//                    HashSet<Integer> relDocs = new HashSet<>();  // relevant documents of a query
-//                    for(int i = 0; i < qryScore.size(); i++)
-//                        relDocs.add(qryScore.getDocid(i));
 
                     for(int i = 0; i < intents.size(); i++){
                         String intent = intents.get(i);
                         String body = this.intentBody.get(qid).get(i);
-                        System.out.println(intent + ": " + body);
-                        ScoreList initial = QryEval.processQuery(0, body, model);
-
-//                        // eliminate those which doesn't show up in query ranking
-//                        ScoreList s = new ScoreList();
-//                        for(int j = 0; j < initial.size(); j++){
-//                            int docid = initial.getDocid(j);
-//                            if(relDocs.contains(docid))
-//                                s.add(docid, initial.getDocidScore(j));
-//                        }
-//                        s.sort();
-//                        intentScores.put(intent, s);
-//                        QryEval.printResults(intent, s);
-
-                        initial.sort();
-                        intentScores.put(intent, initial);
+                        ScoreList s = QryEval.processQuery(0, body, model);
+                        s.sort();
+                        intentScores.put(intent, s);
 //                        QryEval.printResults(intent, initial);
                     }
                 }
