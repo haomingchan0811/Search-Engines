@@ -5,6 +5,7 @@
 import javafx.beans.binding.DoubleExpression;
 
 import java.io.*;
+import java.lang.reflect.Array;
 import java.util.*;
 
 /**
@@ -61,7 +62,7 @@ public class QryDiversification {
 
         processQueryFile(parameters.get("queryFilePath"), model);
 
-        // unitTest_xQuAD();
+//         unitTest_PM2();
     }
 
     /**
@@ -196,7 +197,6 @@ public class QryDiversification {
 
                 String qid = qLine.substring(0, d);
                 String query = qLine.substring(d + 1);
-//                System.out.println(qid + " " + query);
 
                 // fetch the rankings for query and its intents
                 ScoreList qryScore;   // initial ranking for a query
@@ -386,11 +386,74 @@ public class QryDiversification {
     public ScoreList PM2(ArrayList<ArrayList<Double>> scores, HashMap<Integer, Integer> docidAtRank){
         ScoreList r = new ScoreList();
 
+        int numOfIntents = scores.get(0).size() - 1;
+        // vote for each intent (assume uniform)
+        double votes = this.resultRankingLen * 1.0 / numOfIntents;
+        // slots already assigned for each intent
+        ArrayList<Double> slots = new ArrayList<>(Collections.nCopies(numOfIntents + 1, 0.0));
 
+        HashSet<Integer> candidates = new HashSet<>();   // candidate documents
+        for(int i = 0; i < scores.size(); i++)
+            candidates.add(i);
+
+        // selection progress
+        while(r.size() < this.resultRankingLen){
+
+            // select intent that has the maximal quotient to fulfill
+            int target = -1;
+            double maxQuotient = -1.0;
+            HashMap<Integer, Double> quotients = new HashMap<>();
+            for(int i = 1; i <= numOfIntents; i++){
+                double qt = votes / (2 * slots.get(i) + 1);
+                quotients.put(i, qt);
+                if(maxQuotient < qt){
+                    maxQuotient = qt;
+                    target = i;
+                }
+            }
+
+            // select document that best fits the selected intent
+            int winner = -1;     // selected document id for current rank
+            double maxScore = -Double.MAX_VALUE;
+
+            // compute score for each candidate
+            for(int i: candidates){
+                ArrayList<Double> qryScore = scores.get(i);
+
+                // compute scores for covering the target intent
+                double coverTargetIntent = maxQuotient * qryScore.get(target);
+
+                // compute scores for covering other intents
+                double coverOtherIntents = 0.0;    // the score of covering other intents
+                for(int j = 1; j <= numOfIntents; j++) {
+                    if (j == target) continue;  // skip the target intent of this pass
+                    coverOtherIntents += qryScore.get(j) * quotients.get(j);
+                }
+                double s = this.lambda * coverTargetIntent + (1 - this.lambda) * coverOtherIntents;
+
+                if(maxScore < s){   // update document with maximal score
+                    maxScore = s;
+                    winner = i;
+                }
+            }
+
+            // finalize the winner for this round, remove from candidates set
+            candidates.remove(winner);
+            r.add(docidAtRank.get(winner), maxScore);
+//            System.out.println(String.format("id: %d, score: %f", winner + 1, maxScore));
+
+            // update occupied slots for each intent
+            ArrayList<Double> qryScore = scores.get(winner);
+            double sumOfScores = 0.0;
+            for(int i = 1; i <= numOfIntents; i++)
+                sumOfScores += qryScore.get(i);
+            for(int i = 1; i <= numOfIntents; i++)
+                slots.set(i, slots.get(i) + qryScore.get(i) / sumOfScores);
+        }
         return r;
     }
 
-//    public void unitTest_xQuAD(){
+//    public void unitTest_PM2(){
 //        ArrayList<ArrayList<Double>> scores = new ArrayList<>();
 //        ArrayList<Double> a = new ArrayList(Arrays.asList(0.7, 0.7, 0.2));
 //        scores.add(a);
@@ -402,8 +465,11 @@ public class QryDiversification {
 //        scores.add(a);
 //        a = new ArrayList(Arrays.asList(0.66, 0.3, 0.8));
 //        scores.add(a);
-//
-//        ScoreList r = xQuAD(scores);
+//        HashMap<Integer, Integer> docidAtRank = new HashMap<>();
+//        this.resultRankingLen = 8;
+//        for(int i = 0; i < 5; i++)
+//            docidAtRank.put(i, i + 1);
+//        ScoreList r = PM2(scores, docidAtRank);
 //    }
 
 }
