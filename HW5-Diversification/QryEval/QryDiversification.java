@@ -197,7 +197,6 @@ public class QryDiversification {
 
                 String qid = qLine.substring(0, d);
                 String query = qLine.substring(d + 1);
-//                System.out.println(qid + " " + query);
 
                 // fetch the rankings for query and its intents
                 ScoreList qryScore;   // initial ranking for a query
@@ -303,27 +302,16 @@ public class QryDiversification {
             ArrayList<Double> sumOfScores = new ArrayList<>(Collections.nCopies(numOfIntents + 1, 0.0));
             for(int i = 0; i < scores.size(); i++) {
                 ArrayList<Double> qryEntry = scores.get(i);
-//                System.out.print(i + " ");
-                for(int j = 0; j < numOfIntents + 1; j++){
+                for(int j = 0; j < numOfIntents + 1; j++)
                     sumOfScores.set(j, sumOfScores.get(j) + qryEntry.get(j));
-//                    System.out.print(scores.get(i).get(j) + " ");
-                }
-//                System.out.println();
             }
 
             // scalar to perform scaling [0.0 1.0] on all rankings
             double scalar = Collections.max(sumOfScores);
 
-            for(int i = 0; i < sumOfScores.size(); i++)
-                System.out.println(i + " " + sumOfScores.get(i));
-
             for(int i = 0; i < scores.size(); i++) {
-//            System.out.print(i + " ");
-                for(int j = 0; j < numOfIntents + 1; j++){
+                for(int j = 0; j < numOfIntents + 1; j++)
                     scores.get(i).set(j, scores.get(i).get(j) / scalar);
-//                System.out.print(scores.get(i).get(j) + " ");
-                }
-//            System.out.println();
             }
         }
         return scores;
@@ -371,7 +359,6 @@ public class QryDiversification {
             // finalize the winner for this round, remove from candidates set
             candidates.remove(winner);
             r.add(docidAtRank.get(winner), maxScore);
-//            System.out.println(String.format("id: %d, score: %f", winner + 1, maxScore));
             for(int i = 1; i <= numOfIntents; i++)
                 coverageScore.set(i, coverageScore.get(i) * (1.0 - scores.get(winner).get(i)));
         }
@@ -441,7 +428,6 @@ public class QryDiversification {
             // finalize the winner for this round, remove from candidates set
             candidates.remove(winner);
             r.add(docidAtRank.get(winner), maxScore);
-//            System.out.println(String.format("id: %d, score: %f", winner + 1, maxScore));
 
             // update occupied slots for each intent
             ArrayList<Double> qryScore = scores.get(winner);
