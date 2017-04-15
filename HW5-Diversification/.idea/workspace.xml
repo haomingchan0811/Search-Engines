@@ -32,14 +32,14 @@
       <file leaf-file-name="QryDiversification.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/QryDiversification.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-1515">
-              <caret line="299" column="18" lean-forward="true" selection-start-line="299" selection-start-column="18" selection-end-line="299" selection-end-column="18" />
+            <state relative-caret-position="328">
+              <caret line="419" column="53" lean-forward="false" selection-start-line="419" selection-start-column="53" selection-end-line="419" selection-end-column="53" />
               <folding>
                 <element signature="imports" expanded="true" />
                 <element signature="docComment;method#cacheInitialRankings#0;class#QryDiversification#0" expanded="false" />
                 <element signature="docComment;method#cacheIntents#0;class#QryDiversification#0" expanded="false" />
                 <element signature="docComment;method#processQueryFile#0;class#QryDiversification#0" expanded="false" />
-                <element signature="e#18059#18092#0" expanded="false" />
+                <element signature="e#18306#18339#0" expanded="false" />
               </folding>
             </state>
           </provider>
@@ -116,8 +116,8 @@
     <findStrings>
       <find>log</find>
       <find>maxResultRanking</find>
-      <find>resultRankingLen</find>
       <find>Sys</find>
+      <find>resultRankingLen</find>
     </findStrings>
   </component>
   <component name="GradleLocalSettings">
@@ -563,14 +563,14 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/QryDiversification.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-1515">
-          <caret line="299" column="18" lean-forward="true" selection-start-line="299" selection-start-column="18" selection-end-line="299" selection-end-column="18" />
+        <state relative-caret-position="328">
+          <caret line="419" column="53" lean-forward="false" selection-start-line="419" selection-start-column="53" selection-end-line="419" selection-end-column="53" />
           <folding>
             <element signature="imports" expanded="true" />
             <element signature="docComment;method#cacheInitialRankings#0;class#QryDiversification#0" expanded="false" />
             <element signature="docComment;method#cacheIntents#0;class#QryDiversification#0" expanded="false" />
             <element signature="docComment;method#processQueryFile#0;class#QryDiversification#0" expanded="false" />
-            <element signature="e#18059#18092#0" expanded="false" />
+            <element signature="e#18306#18339#0" expanded="false" />
           </folding>
         </state>
       </provider>

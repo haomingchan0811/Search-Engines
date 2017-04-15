@@ -52,6 +52,7 @@ public class QryDiversification {
 
 
     public void run(Map<String, String> parameters, RetrievalModel model) throws Exception {
+        System.out.println("Performing diversified ranking...");
         initialize(parameters, model);
 
         // check whether the initial ranking files and intents have been provided
@@ -232,6 +233,7 @@ public class QryDiversification {
 
                 // perform diversified ranking
                 ScoreList r;
+                System.out.println(qid);
                 switch (this.algorithm){
                     case "pm2":
                         r = PM2(scores, docidAtRank);
@@ -273,7 +275,7 @@ public class QryDiversification {
         boolean scale = false;    // flag to indicate whether scaling should perform
 
         // truncate the rankings
-        int rankingLen = Math.min(inputRankingLen, qryScore.size());
+        int rankingLen = Math.min(this.inputRankingLen, qryScore.size());
         for(int i = 0; i < rankingLen; i++){
             rankOfDocid.put(qryScore.getDocid(i), i);
             ArrayList<Double> arr = new ArrayList<>(Collections.nCopies(numOfIntents + 1, 0.0));
@@ -336,7 +338,8 @@ public class QryDiversification {
         ArrayList<Double> coverageScore = new ArrayList<>(Collections.nCopies(numOfIntents + 1, 1.0));
 
         // selection progress
-        while(r.size() < this.resultRankingLen){
+        int maxOutputSize = Math.min(this.resultRankingLen, candidates.size());
+        while(r.size() < maxOutputSize){
 
             int winner = -1;     // selected document id for current rank
             double maxScore = -Double.MAX_VALUE;
@@ -375,17 +378,18 @@ public class QryDiversification {
         ScoreList r = new ScoreList();
 
         int numOfIntents = scores.get(0).size() - 1;
-        // vote for each intent (assume uniform)
-        double votes = this.resultRankingLen * 1.0 / numOfIntents;
-        // slots already assigned for each intent
-        ArrayList<Double> slots = new ArrayList<>(Collections.nCopies(numOfIntents + 1, 0.0));
-
         HashSet<Integer> candidates = new HashSet<>();   // candidate documents
         for(int i = 0; i < scores.size(); i++)
             candidates.add(i);
 
+        // vote for each intent (assume uniform)
+        int maxOutputSize = Math.min(this.resultRankingLen, candidates.size());
+        double votes = maxOutputSize * 1.0 / numOfIntents;
+        // slots already assigned for each intent
+        ArrayList<Double> slots = new ArrayList<>(Collections.nCopies(numOfIntents + 1, 0.0));
+
         // selection progress
-        while(r.size() < this.resultRankingLen){
+        while(r.size() < maxOutputSize){
 
             // select intent that has the maximal quotient to fulfill
             int target = -1;
