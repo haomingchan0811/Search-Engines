@@ -105,7 +105,7 @@ public class QryEval {
     RetrievalModel model = null;
     if(!parameters.containsKey("retrievalAlgorithm"))   // add checking for HW5 (diversification)
         return model;
-
+    
     String modelString = parameters.get("retrievalAlgorithm").toLowerCase();
 
     switch(modelString){

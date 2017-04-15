@@ -16,42 +16,28 @@
   <component name="ExecutionTargetManager" SELECTED_TARGET="default_target" />
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="QryEval.java" pinned="false" current-in-tab="false">
+      <file leaf-file-name="QryEval.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/QryEval.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="418">
-              <caret line="105" column="75" lean-forward="false" selection-start-line="105" selection-start-column="62" selection-end-line="105" selection-end-column="75" />
+            <state relative-caret-position="1973">
+              <caret line="278" column="52" lean-forward="true" selection-start-line="278" selection-start-column="52" selection-end-line="278" selection-end-column="52" />
               <folding>
-                <element signature="e#4860#4919#0" expanded="false" />
+                <element signature="e#4981#5040#0" expanded="false" />
                 <element signature="docComment;method#readParameterFile#0;class#QryEval#0" expanded="false" />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="RetrievalModelBM25.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/RetrievalModelBM25.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="204">
-              <caret line="22" column="29" lean-forward="true" selection-start-line="22" selection-start-column="29" selection-end-line="22" selection-end-column="29" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="QryDiversification.java" pinned="false" current-in-tab="true">
+      <file leaf-file-name="QryDiversification.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/QryDiversification.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="485">
-              <caret line="437" column="4" lean-forward="false" selection-start-line="437" selection-start-column="4" selection-end-line="437" selection-end-column="4" />
+            <state relative-caret-position="410">
+              <caret line="327" column="77" lean-forward="true" selection-start-line="327" selection-start-column="77" selection-end-line="327" selection-end-column="77" />
               <folding>
                 <element signature="imports" expanded="true" />
-                <element signature="class#Entry#0;class#QryDiversification#0" expanded="false" />
-                <element signature="class#EntryComparator#0;class#QryDiversification#0" expanded="false" />
                 <element signature="docComment;method#cacheInitialRankings#0;class#QryDiversification#0" expanded="false" />
-                <element signature="method#cacheInitialRankings#0;class#QryDiversification#0" expanded="false" />
                 <element signature="docComment;method#cacheIntents#0;class#QryDiversification#0" expanded="false" />
-                <element signature="method#cacheIntents#0;class#QryDiversification#0" expanded="false" />
                 <element signature="docComment;method#processQueryFile#0;class#QryDiversification#0" expanded="false" />
               </folding>
             </state>
@@ -61,7 +47,7 @@
       <file leaf-file-name="ScoreList.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/ScoreList.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="262">
+            <state relative-caret-position="-333">
               <caret line="51" column="13" lean-forward="false" selection-start-line="51" selection-start-column="13" selection-end-line="51" selection-end-column="13" />
               <folding>
                 <element signature="e#1311#1312#0" expanded="true" />
@@ -81,11 +67,41 @@
           </provider>
         </entry>
       </file>
+      <file leaf-file-name="QrySopAnd.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/QrySopAnd.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="17">
+              <caret line="1" column="38" lean-forward="false" selection-start-line="1" selection-start-column="38" selection-end-line="1" selection-end-column="38" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="QrySopSum.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/QrySopSum.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="119">
+              <caret line="9" column="13" lean-forward="false" selection-start-line="9" selection-start-column="13" selection-end-line="9" selection-end-column="13" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="QrySopScore.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/QrySopScore.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="226">
+              <caret line="133" column="53" lean-forward="false" selection-start-line="133" selection-start-column="50" selection-end-line="133" selection-end-column="53" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
       <file leaf-file-name="RetrievalModelLeToR.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/RetrievalModelLeToR.java">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="-5015">
-              <caret line="125" column="75" lean-forward="true" selection-start-line="125" selection-start-column="75" selection-end-line="125" selection-end-column="75" />
+              <caret line="125" column="75" lean-forward="false" selection-start-line="125" selection-start-column="75" selection-end-line="125" selection-end-column="75" />
               <folding>
                 <element signature="method#reRank#0;class#RetrievalModelLeToR#0" expanded="false" />
               </folding>
@@ -94,6 +110,12 @@
         </entry>
       </file>
     </leaf>
+  </component>
+  <component name="FindInProjectRecents">
+    <findStrings>
+      <find>log</find>
+      <find>maxResultRanking</find>
+    </findStrings>
   </component>
   <component name="GradleLocalSettings">
     <option name="externalProjectsViewState">
@@ -104,8 +126,8 @@
     <option name="CHANGED_PATHS">
       <list>
         <option value="$PROJECT_DIR$/src/RetrievalModelBM25.java" />
-        <option value="$PROJECT_DIR$/src/QryEval.java" />
         <option value="$PROJECT_DIR$/src/QryDiversification.java" />
+        <option value="$PROJECT_DIR$/src/QryEval.java" />
       </list>
     </option>
   </component>
@@ -425,13 +447,13 @@
       <window_info id="Palette" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Nl-Palette" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
-      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32913843" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
+      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3282532" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
       <window_info id="Palette&#9;" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
       <window_info id="Image Layers" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
       <window_info id="Capture Analysis" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="true" content_ui="tabs" />
       <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.3465634" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.28848016" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="false" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
       <window_info id="Properties" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
@@ -457,7 +479,7 @@
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
-      <option name="time" value="2" />
+      <option name="time" value="3" />
     </breakpoint-manager>
     <watches-manager />
   </component>
@@ -466,6 +488,24 @@
     <option name="FILTER_TARGETS" value="false" />
   </component>
   <component name="editorHistoryManager">
+    <entry file="file://$PROJECT_DIR$/src/RetrievalModelLeToR.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-5015">
+          <caret line="125" column="75" lean-forward="false" selection-start-line="125" selection-start-column="75" selection-end-line="125" selection-end-column="75" />
+          <folding>
+            <element signature="method#reRank#0;class#RetrievalModelLeToR#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/QrySopSum.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="119">
+          <caret line="9" column="13" lean-forward="false" selection-start-line="9" selection-start-column="13" selection-end-line="9" selection-end-column="13" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/src/RetrievalModelIndri.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="153">
@@ -474,19 +514,33 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/RetrievalModelLeToR.java">
+    <entry file="file://$PROJECT_DIR$/src/QrySopAnd.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-5015">
-          <caret line="125" column="75" lean-forward="true" selection-start-line="125" selection-start-column="75" selection-end-line="125" selection-end-column="75" />
-          <folding>
-            <element signature="method#reRank#0;class#RetrievalModelLeToR#0" expanded="false" />
-          </folding>
+        <state relative-caret-position="17">
+          <caret line="1" column="38" lean-forward="false" selection-start-line="1" selection-start-column="38" selection-end-line="1" selection-end-column="38" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/QrySopScore.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="226">
+          <caret line="133" column="53" lean-forward="false" selection-start-line="133" selection-start-column="50" selection-end-line="133" selection-end-column="53" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/RetrievalModelBM25.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="289">
+          <caret line="22" column="29" lean-forward="false" selection-start-line="22" selection-start-column="29" selection-end-line="22" selection-end-column="29" />
+          <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/ScoreList.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="262">
+        <state relative-caret-position="-333">
           <caret line="51" column="13" lean-forward="false" selection-start-line="51" selection-start-column="13" selection-end-line="51" selection-end-column="13" />
           <folding>
             <element signature="e#1311#1312#0" expanded="true" />
@@ -495,38 +549,26 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/QryEval.java">
+    <entry file="file://$PROJECT_DIR$/src/QryDiversification.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="418">
-          <caret line="105" column="75" lean-forward="false" selection-start-line="105" selection-start-column="62" selection-end-line="105" selection-end-column="75" />
+        <state relative-caret-position="410">
+          <caret line="327" column="77" lean-forward="true" selection-start-line="327" selection-start-column="77" selection-end-line="327" selection-end-column="77" />
           <folding>
-            <element signature="e#4860#4919#0" expanded="false" />
-            <element signature="docComment;method#readParameterFile#0;class#QryEval#0" expanded="false" />
+            <element signature="imports" expanded="true" />
+            <element signature="docComment;method#cacheInitialRankings#0;class#QryDiversification#0" expanded="false" />
+            <element signature="docComment;method#cacheIntents#0;class#QryDiversification#0" expanded="false" />
+            <element signature="docComment;method#processQueryFile#0;class#QryDiversification#0" expanded="false" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/RetrievalModelBM25.java">
+    <entry file="file://$PROJECT_DIR$/src/QryEval.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="204">
-          <caret line="22" column="29" lean-forward="true" selection-start-line="22" selection-start-column="29" selection-end-line="22" selection-end-column="29" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/QryDiversification.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="485">
-          <caret line="437" column="4" lean-forward="false" selection-start-line="437" selection-start-column="4" selection-end-line="437" selection-end-column="4" />
+        <state relative-caret-position="1973">
+          <caret line="278" column="52" lean-forward="true" selection-start-line="278" selection-start-column="52" selection-end-line="278" selection-end-column="52" />
           <folding>
-            <element signature="imports" expanded="true" />
-            <element signature="class#Entry#0;class#QryDiversification#0" expanded="false" />
-            <element signature="class#EntryComparator#0;class#QryDiversification#0" expanded="false" />
-            <element signature="docComment;method#cacheInitialRankings#0;class#QryDiversification#0" expanded="false" />
-            <element signature="method#cacheInitialRankings#0;class#QryDiversification#0" expanded="false" />
-            <element signature="docComment;method#cacheIntents#0;class#QryDiversification#0" expanded="false" />
-            <element signature="method#cacheIntents#0;class#QryDiversification#0" expanded="false" />
-            <element signature="docComment;method#processQueryFile#0;class#QryDiversification#0" expanded="false" />
+            <element signature="e#4981#5040#0" expanded="false" />
+            <element signature="docComment;method#readParameterFile#0;class#QryEval#0" expanded="false" />
           </folding>
         </state>
       </provider>
