@@ -7,4 +7,6 @@ if __name__ == '__main__':
 		lines = f.readlines()
 		for line in lines:
 			line = line.strip().split(',')
-			print line[1], line[-5], line[-4], line[13]			
+			print line[1], line[-5], line[-4], line[13]
+			out = [line[1], line[-5], line[-4], line[13]]
+		print "\n".join(out)			
