@@ -233,7 +233,6 @@ public class QryDiversification {
 
                 // perform diversified ranking
                 ScoreList r;
-                System.out.println(qid + ": size= " + scores.size());
                 switch (this.algorithm){
                     case "pm2":
                         r = PM2(scores, docidAtRank);
@@ -403,10 +402,6 @@ public class QryDiversification {
                     target = i;
                 }
             }
-//            System.out.println(r.size() + " " + target);
-//            for(int i: quotients.keySet())
-//                System.out.println(i + "->" + quotients.get(i));
-
 
             // select document that best fits the selected intent
             int winner = -1;     // selected document id for current rank
@@ -433,19 +428,28 @@ public class QryDiversification {
                 }
             }
 
+            // SPECIAL CASE: intent scores are all 0
+            // maintain the relevance order by assigning corresponding scores
+            if(maxScore == 0){
+                for(int j = 0; j < scores.size() && r.size() < maxOutputSize; j++){
+                    if(candidates.contains(j)){
+                        double s = r.getDocidScore(r.size() - 1) * 0.9;
+                        r.add(docidAtRank.get(j), s);
+                        candidates.remove(j);
+                    }
+                }
+                return r;
+            }
+
             // finalize the winner for this round, remove from candidates set
             candidates.remove(winner);
             r.add(docidAtRank.get(winner), maxScore);
 
             // update occupied slots for each intent
             ArrayList<Double> qryScore = scores.get(winner);
-            for(int i = 0; i < qryScore.size(); i++)
-                System.out.print(qryScore.get(i) + " ");
-            System.out.println("\nWinner Doc: " + winner);
             double sumOfScores = 0.0;
             for(int i = 1; i <= numOfIntents; i++)
                 sumOfScores += qryScore.get(i);
-            if(sumOfScores == 0) continue;
             for(int i = 1; i <= numOfIntents; i++)
                 slots.set(i, slots.get(i) + qryScore.get(i) / sumOfScores);
         }

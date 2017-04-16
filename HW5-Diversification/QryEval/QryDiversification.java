@@ -233,7 +233,6 @@ public class QryDiversification {
 
                 // perform diversified ranking
                 ScoreList r;
-                System.out.println(qid);
                 switch (this.algorithm){
                     case "pm2":
                         r = PM2(scores, docidAtRank);
@@ -287,7 +286,7 @@ public class QryDiversification {
 
         for(String i: intentScores.keySet()){
             ScoreList r = intentScores.get(i);
-            for(int j = 0; j < rankingLen; j++){
+            for(int j = 0; j < rankingLen && j < r.size(); j++){
                 int docid = r.getDocid(j);
                 if(rankOfDocid.containsKey(docid)){
                     int index = rankOfDocid.get(docid);
@@ -427,6 +426,19 @@ public class QryDiversification {
                     maxScore = s;
                     winner = i;
                 }
+            }
+
+            // SPECIAL CASE: intent scores are all 0
+            // maintain the relevance order by assigning corresponding scores
+            if(maxScore == 0){
+                for(int j = 0; j < scores.size() && r.size() < maxOutputSize; j++){
+                    if(candidates.contains(j)){
+                        double s = r.getDocidScore(r.size() - 1) * 0.9;
+                        r.add(docidAtRank.get(j), s);
+                        candidates.remove(j);
+                    }
+                }
+                return r;
             }
 
             // finalize the winner for this round, remove from candidates set

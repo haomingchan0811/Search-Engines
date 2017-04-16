@@ -20,7 +20,7 @@
         <entry file="file://$PROJECT_DIR$/src/QryEval.java">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="1973">
-              <caret line="278" column="52" lean-forward="true" selection-start-line="278" selection-start-column="52" selection-end-line="278" selection-end-column="52" />
+              <caret line="278" column="52" lean-forward="false" selection-start-line="278" selection-start-column="52" selection-end-line="278" selection-end-column="52" />
               <folding>
                 <element signature="e#4981#5040#0" expanded="false" />
                 <element signature="docComment;method#readParameterFile#0;class#QryEval#0" expanded="false" />
@@ -32,14 +32,14 @@
       <file leaf-file-name="QryDiversification.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/QryDiversification.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="603">
-              <caret line="405" column="0" lean-forward="false" selection-start-line="405" selection-start-column="2" selection-end-line="407" selection-end-column="66" />
+            <state relative-caret-position="8">
+              <caret line="411" column="59" lean-forward="false" selection-start-line="411" selection-start-column="59" selection-end-line="411" selection-end-column="59" />
               <folding>
                 <element signature="imports" expanded="true" />
                 <element signature="docComment;method#cacheInitialRankings#0;class#QryDiversification#0" expanded="false" />
                 <element signature="docComment;method#cacheIntents#0;class#QryDiversification#0" expanded="false" />
                 <element signature="docComment;method#processQueryFile#0;class#QryDiversification#0" expanded="false" />
-                <element signature="e#18735#18768#0" expanded="false" />
+                <element signature="e#18828#18861#0" expanded="false" />
               </folding>
             </state>
           </provider>
@@ -555,7 +555,7 @@
     <entry file="file://$PROJECT_DIR$/src/QryEval.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="1973">
-          <caret line="278" column="52" lean-forward="true" selection-start-line="278" selection-start-column="52" selection-end-line="278" selection-end-column="52" />
+          <caret line="278" column="52" lean-forward="false" selection-start-line="278" selection-start-column="52" selection-end-line="278" selection-end-column="52" />
           <folding>
             <element signature="e#4981#5040#0" expanded="false" />
             <element signature="docComment;method#readParameterFile#0;class#QryEval#0" expanded="false" />
@@ -565,14 +565,14 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/QryDiversification.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="603">
-          <caret line="405" column="0" lean-forward="false" selection-start-line="405" selection-start-column="2" selection-end-line="407" selection-end-column="66" />
+        <state relative-caret-position="8">
+          <caret line="411" column="59" lean-forward="false" selection-start-line="411" selection-start-column="59" selection-end-line="411" selection-end-column="59" />
           <folding>
             <element signature="imports" expanded="true" />
             <element signature="docComment;method#cacheInitialRankings#0;class#QryDiversification#0" expanded="false" />
             <element signature="docComment;method#cacheIntents#0;class#QryDiversification#0" expanded="false" />
             <element signature="docComment;method#processQueryFile#0;class#QryDiversification#0" expanded="false" />
-            <element signature="e#18735#18768#0" expanded="false" />
+            <element signature="e#18828#18861#0" expanded="false" />
           </folding>
         </state>
       </provider>
