@@ -233,7 +233,7 @@ public class QryDiversification {
 
                 // perform diversified ranking
                 ScoreList r;
-                System.out.println(qid);
+                System.out.println(qid + ": size= " + scores.size());
                 switch (this.algorithm){
                     case "pm2":
                         r = PM2(scores, docidAtRank);
@@ -287,7 +287,7 @@ public class QryDiversification {
 
         for(String i: intentScores.keySet()){
             ScoreList r = intentScores.get(i);
-            for(int j = 0; j < rankingLen; j++){
+            for(int j = 0; j < rankingLen && j < r.size(); j++){
                 int docid = r.getDocid(j);
                 if(rankOfDocid.containsKey(docid)){
                     int index = rankOfDocid.get(docid);
@@ -403,6 +403,10 @@ public class QryDiversification {
                     target = i;
                 }
             }
+//            System.out.println(r.size() + " " + target);
+//            for(int i: quotients.keySet())
+//                System.out.println(i + "->" + quotients.get(i));
+
 
             // select document that best fits the selected intent
             int winner = -1;     // selected document id for current rank
@@ -435,9 +439,13 @@ public class QryDiversification {
 
             // update occupied slots for each intent
             ArrayList<Double> qryScore = scores.get(winner);
+            for(int i = 0; i < qryScore.size(); i++)
+                System.out.print(qryScore.get(i) + " ");
+            System.out.println("\nWinner Doc: " + winner);
             double sumOfScores = 0.0;
             for(int i = 1; i <= numOfIntents; i++)
                 sumOfScores += qryScore.get(i);
+            if(sumOfScores == 0) continue;
             for(int i = 1; i <= numOfIntents; i++)
                 slots.set(i, slots.get(i) + qryScore.get(i) / sumOfScores);
         }
